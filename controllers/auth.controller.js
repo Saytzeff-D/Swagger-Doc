@@ -27,7 +27,7 @@ const login = (req, res) => {
         }
         if (await bcrypt.compare(user[0].password, payload.password)) {
             accessToken(user)
-            res.send('Logged in!')
+            // res.send('Logged in!')
         } else {
             return res.status(200).json({message: 'Incorrect Password'})
         }

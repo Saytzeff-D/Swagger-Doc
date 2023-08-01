@@ -37,5 +37,8 @@ const accessToken = (user)=>{
     const token = jwt.sign({ result: user }, process.env.JWT_SECRET, { expiresIn: '60m' })
     res.status(200).json({token})
 }
+const currentUser = (req, res)=>{
+    res.status(200).json({loggedInUser: req.user})
+}
 
-module.exports = { register, login }
+module.exports = { register, login, currentUser }

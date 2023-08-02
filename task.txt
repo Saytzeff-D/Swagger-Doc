@@ -1,0 +1,3 @@
+AUTH
+- Check for duplicate mail before creating mail
+- Add token to response header

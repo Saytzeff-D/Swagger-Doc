@@ -6,11 +6,13 @@ const bodyParser = require("body-parser");
 const pool = require('./connections/pool');
 const AuthRouter = require('./routes/auth.route');
 const SeedRouter = require('./routes/seedRoute');
+const CountryRouter = require('./routes/countryRoute');
 
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 app.use(cors({origin: '*'}))
 app.use('/auth', AuthRouter)
+app.use('/country', CountryRouter)
 app.use('/seed', SeedRouter)
 
 pool.getConnection((err, conn)=>{

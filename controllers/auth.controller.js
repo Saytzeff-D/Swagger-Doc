@@ -6,23 +6,23 @@ const register = async (req, res) => {
     let payload = req.body;
     const hashedPassword = await bcrypt.hash(payload.password, 10);
     //Check if mail has previously been registered
-    const checkEmailQuery = `SELECT * FROM users WHERE email = ?`
-    pool.query(checkEmailQuery, [payload.email], (err, result) => {        
-        if (result.length > 0) {
-            return res.status(200).json({ message: 'This mail has previously been registered' });
-        }else{
-            const values = [payload.email, hashedPassword]
-            const sql = `INSERT INTO users (email, password) VALUES(?, ?)`
-            pool.query(sql, values, (err, result) => {
-                if (!err) {
-                    res.status(200).json({message: 'Success'})
-                } else {
-                    console.log(err)
-                    res.status(500).json({message: 'Internal Server Error'})
-                }
-            })
+    const checkEmailQuery = `SELECT COUNT(*) AS count FROM users WHERE email = ?`
+    pool.query(checkEmailQuery, [payload.email], async (err, result) => {
+        const emailExists = result[0].count > 0;
+        if (emailExists) {
+            return res.status(409).json({ message: 'This mail has previously been registered' });
         }
-    })    
+    })
+    const values = [payload.email, hashedPassword]
+    const sql = `INSERT INTO users (email, password) VALUES(?, ?)`
+    pool.query(sql, values, (err, result) => {
+        if (!err) {
+            res.status(200).json({message: 'Success'})
+        } else {
+            console.log(err)
+            res.status(500).json({message: 'Internal Server Error'})
+        }
+    })
 }
 
 

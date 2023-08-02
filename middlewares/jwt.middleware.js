@@ -6,6 +6,7 @@ const authJWT = (req, res, next)=>{
         const token = splitJWT.split(' ')[1]
         jwt.verify(token, process.env.JWT_SECRET, (err, data)=>{
             if (err) {
+                console.log(err)
                 res.status(500).json({message: 'Token Expired'})
             } else {            
                 req.user = data.result

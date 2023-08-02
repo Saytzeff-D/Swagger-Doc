@@ -11,6 +11,7 @@ const register = async (req, res) => {
         if (!err) {
             res.status(200).json({message: 'Success'})
         } else {
+            console.log(err)
             res.status(500).json({message: 'Internal Server Error'})
         }
     })
@@ -27,19 +28,19 @@ const login = (req, res) => {
         if (user.length == 0) {
             return res.status(200).json({message: 'User not found'})
         }
-        if (await bcrypt.compare(user[0].password, payload.password)) {
-            accessToken(user)
+        if (await bcrypt.compare(payload.password, user[0].password)) {
+            const token = accessToken(user)
+            res.status(200).json({token})
         } else {
             return res.status(200).json({message: 'Incorrect Password'})
         }
     })
 }
 const accessToken = (user)=>{
-    const token = jwt.sign({ result: user }, process.env.JWT_SECRET, { expiresIn: '60m' })
-    res.status(200).json({token})
+    return jwt.sign({ result: user }, process.env.JWT_SECRET, { expiresIn: '60m' })    
 }
 const currentUser = (req, res)=>{
-    res.status(200).json({loggedInUser: req.user})
+    res.status(200).json({loggedInUser: req.user[0]})
 }
 
 module.exports = { register, login, currentUser }

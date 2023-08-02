@@ -1,6 +1,6 @@
 const pool = require("../connections/pool")
 
-const createTables = async (req, res) => {
+const createTables = (req, res) => {
     const sql = `
         CREATE TABLE countries (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -36,6 +36,7 @@ const createTables = async (req, res) => {
                     lastname VARCHAR(255),
                     image VARCHAR(255),
                     documents TEXT,
+                    isAdmin BOOLEAN DEFAULT false,
                     country_id INT,
                     FOREIGN KEY (country_id) REFERENCES countries(id)
                 );
@@ -68,4 +69,39 @@ const createTables = async (req, res) => {
     });
 }
 
-module.exports = { createTables }
+
+
+const dropAll = (req, res) => {
+    const dropTables = [
+        'DROP TABLE IF EXISTS countries;',
+        'DROP TABLE IF EXISTS services;',
+        'DROP TABLE IF EXISTS users;',
+        'DROP TABLE IF EXISTS transactions;'
+    ];
+  
+    let errorOccurred = false;
+    let completedCount = 0;
+  
+    dropTables.forEach((sql) => {
+        pool.query(sql, (err, result) => {
+            completedCount++;
+    
+            if (err) {
+                errorOccurred = true;
+                console.error('Error dropping table:', err);
+            }
+    
+            if (completedCount === dropTables.length) {
+                if (errorOccurred) {
+                    return res.status(500).json({ message: 'Error dropping tables', err });
+                }
+                return res.status(200).json({ message: 'Tables dropped successfully' });
+            }
+        });
+    });
+  };
+  
+  
+
+
+module.exports = { createTables, dropAll }

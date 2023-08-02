@@ -2,11 +2,12 @@ const pool = require("../connections/pool")
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 
-const register = async (req, res) =>{
-    let payload = req.body
+const register = async (req, res) => {
+    let payload = req.body;
     const hashedPassword = await bcrypt.hash(payload.password, 10);
-    const sql = `INSERT INTO users (email, password) VALUES('${payload.email}', '${hashedPassword}')`
-    pool.query(sql, (err, result)=>{
+    const values = [payload.email, hashedPassword]
+    const sql = `INSERT INTO users (email, password) VALUES(?, ?)`
+    pool.query(sql, values, (err, result) => {
         if (!err) {
             res.status(200).json({message: 'Success'})
         } else {
@@ -16,8 +17,9 @@ const register = async (req, res) =>{
 }
 const login = (req, res) => {
     let payload = req.body
-    const checkEmail = `SELECT * FROM users WHERE email = '${payload.email}'`
-    pool.query(checkEmail, async (err, result)=>{
+    const values = [payload.email]
+    const checkEmail = `SELECT * FROM users WHERE email = ?`
+    pool.query(checkEmail, values, async (err, result)=>{
         const user = result
         if (err) {
             return res.status(500).json({message: 'Internal Server Error'})
@@ -27,7 +29,6 @@ const login = (req, res) => {
         }
         if (await bcrypt.compare(user[0].password, payload.password)) {
             accessToken(user)
-            // res.send('Logged in!')
         } else {
             return res.status(200).json({message: 'Incorrect Password'})
         }

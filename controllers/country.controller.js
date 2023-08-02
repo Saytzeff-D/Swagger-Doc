@@ -16,9 +16,10 @@ const getCountries = (req, res) => {
 
 
 const getCountry = (req, res) => {
-    const sql = `SELECT * FROM countries WHERE id = ${req.params.id}`
+    const values = [req.params.id]
+    const sql = `SELECT * FROM countries WHERE id = ?`
   
-    pool.query(sql, (err, result) => {
+    pool.query(sql, values, (err, result) => {
       if (err) {
         console.error('Error fetching country:', err);
         return res.status(500).send({ message: 'Internal Server Error' });
@@ -33,8 +34,9 @@ const getCountry = (req, res) => {
 
 const createCountry = (req, res) => {
     const { name, image, description } = req.body;
-    const countryExistsQuery = `SELECT COUNT(*) AS count FROM countries WHERE name = ${name}`;
-    pool.query(countryExistsQuery, (err, result) => {
+    const values = [ name, image, description ];
+    const countryExistsQuery = `SELECT COUNT(*) AS count FROM countries WHERE name = ?`;
+    pool.query(countryExistsQuery, [ name ], (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Internal Server Error' });
         }
@@ -43,8 +45,8 @@ const createCountry = (req, res) => {
         if (countryExists) {
             return res.status(409).json({ message: 'Country with the same name already exists' });
         }
-        const sql = `INSERT INTO countries (name, image, description) VALUES (${name}, ${image}, ${description})`;
-        pool.query(sql, (err, result) => {
+        const sql = `INSERT INTO countries (name, image, description) VALUES (?, ?, ?)`;
+        pool.query(sql, values, (err, result) => {
             if (err) {
             console.error('Error creating a new country:', err);
             return res.status(500).json({ message: 'Internal Server Error' });
@@ -60,10 +62,11 @@ const createCountry = (req, res) => {
 
 const updateCountry = (req, res) => {
     const { name, image, description } = req.body;
-  
-    const sql = `UPDATE countries SET name = ${name}, image = ${image}, description = ${description} WHERE id = ${req.params.id}`;
+    const values = [ name, image, description, req.params.id ];
+
+    const sql = `UPDATE countries SET name = ?, image = ?, description = ? WHERE id = ?`;
     
-    pool.query(sql, (err, result) => {
+    pool.query(sql, values, (err, result) => {
         if (err) {
             console.error('Error updating country:', err);
             return res.status(500).json({ message: 'Internal Server Error' });
@@ -79,8 +82,8 @@ const updateCountry = (req, res) => {
 
 
 const deleteCountry = (req, res) => {
-    const sql = `DELETE FROM countries WHERE id = ${req.params.id}`;
-    pool.query(sql, (err, result) => {
+    const sql = `DELETE FROM countries WHERE id = ?`;
+    pool.query(sql, [ req.params.id ], (err, result) => {
         if (err) {
             console.error('Error deleting country:', err);
             return res.status(500).json({ message: 'Internal Server Error' });

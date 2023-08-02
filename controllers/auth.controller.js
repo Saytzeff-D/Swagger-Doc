@@ -5,6 +5,14 @@ const bcrypt = require('bcrypt')
 const register = async (req, res) => {
     let payload = req.body;
     const hashedPassword = await bcrypt.hash(payload.password, 10);
+    //Check if mail has previously been registered
+    const checkEmailQuery = `SELECT COUNT(*) AS count FROM users WHERE email = ?`
+    pool.query(checkEmailQuery, [payload.email], async (err, result) => {
+        const emailExists = result[0].count > 0;
+        if (emailExists) {
+            return res.status(409).json({ message: 'This mail has previously been registered' });
+        }
+    })
     const values = [payload.email, hashedPassword]
     const sql = `INSERT INTO users (email, password) VALUES(?, ?)`
     pool.query(sql, values, (err, result) => {
@@ -15,6 +23,8 @@ const register = async (req, res) => {
         }
     })
 }
+
+
 const login = (req, res) => {
     let payload = req.body
     const values = [payload.email]
@@ -34,6 +44,8 @@ const login = (req, res) => {
         }
     })
 }
+
+
 const accessToken = (user)=>{
     const token = jwt.sign({ result: user }, process.env.JWT_SECRET, { expiresIn: '60m' })
     res.status(200).json({token})
@@ -41,5 +53,6 @@ const accessToken = (user)=>{
 const currentUser = (req, res)=>{
     res.status(200).json({loggedInUser: req.user})
 }
+
 
 module.exports = { register, login, currentUser }

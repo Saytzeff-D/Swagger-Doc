@@ -19,7 +19,11 @@ const createTables = (req, res) => {
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 description TEXT,
-                image VARCHAR(255)
+                image VARCHAR(255),
+                price DECIMAL(10, 2),
+                country_id INT,
+                category VARCHAR(50),
+                FOREIGN KEY (country_id) REFERENCES countries(id)
             );
         `;
         pool.query(sql2, (err, result) => {
@@ -38,6 +42,7 @@ const createTables = (req, res) => {
                     documents TEXT,
                     isAdmin BOOLEAN DEFAULT false,
                     country_id INT,
+                    category VARCHAR(50),
                     FOREIGN KEY (country_id) REFERENCES countries(id)
                 );
             `;
@@ -73,9 +78,9 @@ const createTables = (req, res) => {
 
 const dropAll = (req, res) => {
     const dropTables = [
-        'DROP TABLE IF EXISTS countries;',
         'DROP TABLE IF EXISTS services;',
         'DROP TABLE IF EXISTS users;',
+        'DROP TABLE IF EXISTS countries;',
         'DROP TABLE IF EXISTS transactions;'
     ];
   

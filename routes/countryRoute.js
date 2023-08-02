@@ -1,8 +1,12 @@
 const CountryRouter = require("express").Router()
-const { newCountry, getCountries } = require("../controllers/country.controller")
+const { isAuth, isAdmin } = require("../middlewares/authMiddleware")
+const { updateCountry, deleteCountry, createCountry, getCountry, getCountries } = require("../controllers/country.controller")
 
 CountryRouter.get('/countries', getCountries);
-CountryRouter.post('/countries', newCountry);
+CountryRouter.get('/countries/:id', getCountry);
+CountryRouter.post('/countries', isAuth, isAdmin, createCountry);
+CountryRouter.put('/countries/:id', isAuth, isAdmin, updateCountry);
+CountryRouter.delete('/countries/:id', isAuth, isAdmin, deleteCountry);
 
 
 

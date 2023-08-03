@@ -22,6 +22,6 @@ pool.getConnection((err, conn)=>{
         console.log('Connection Error', err)
     }
 })
-app.get('/', (req, res) => res.send('Server is now live'))
+app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'))
 
 app.listen(process.env.PORT, () => console.log(`FWR-Server is now listening on port ${process.env.PORT}`))

@@ -20,7 +20,7 @@ pool.getConnection((err, conn)=>{
     if(!err){
         console.log('FWR-Server is now connected to MySQL Database')
     }else{
-        console.log('Connection Error', err)
+        console.log('Connection Error')
     }
 })
 app.get('/', (req, res) => res.render('index'))

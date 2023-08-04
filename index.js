@@ -14,6 +14,7 @@ app.use(cors({origin: '*'}))
 app.use('/auth', AuthRouter)
 app.use('/country', CountryRouter)
 app.use('/seed', SeedRouter)
+app.set('view engine', 'ejs')
 
 pool.getConnection((err, conn)=>{
     if(!err){
@@ -22,6 +23,6 @@ pool.getConnection((err, conn)=>{
         console.log('Connection Error', err)
     }
 })
-app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'))
+app.get('/', (req, res) => res.render('index'))
 
 app.listen(process.env.PORT, () => console.log(`FWR-Server is now listening on port ${process.env.PORT}`))

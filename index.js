@@ -5,9 +5,9 @@ const cors = require('cors');
 const bodyParser = require("body-parser");
 const pool = require('./connections/pool');
 const AuthRouter = require('./routes/auth.route');
-const SeedRouter = require('./routes/seedRoute');
-const CountryRouter = require('./routes/countryRoute');
-const DocumentRouter = require('./routes/documentsRoute');
+const SeedRouter = require('./routes/seed.route');
+const CountryRouter = require('./routes/country.route');
+const DocumentRouter = require('./routes/documents.route');
 
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())

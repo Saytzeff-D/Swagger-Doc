@@ -1,5 +1,5 @@
 const CountryRouter = require("express").Router()
-const { isAuth, isAdmin } = require("../middlewares/authMiddleware")
+const { isAuth, isAdmin } = require("../middlewares/auth.middleware")
 const { updateCountry, deleteCountry, createCountry, getCountry, getCountries } = require("../controllers/country.controller")
 
 CountryRouter.get('/countries', getCountries);

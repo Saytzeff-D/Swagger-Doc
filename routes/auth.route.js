@@ -1,6 +1,6 @@
 const express = require('express')
 const { login, register, currentUser } = require('../controllers/auth.controller')
-const { authJWT } = require('../middlewares/jwt.middleware')
+const { authJWT } = require('../middlewares/auth.middleware')
 const AuthRouter = express.Router()
 
 AuthRouter.post('/login', login)

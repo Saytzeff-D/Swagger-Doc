@@ -67,7 +67,25 @@ const createTables = (req, res) => {
                         return res.status(500).json({ message: 'Internal Server Error', err });
                     }
 
-                    return res.status(200).json({ message: 'Success' });
+                    const sql5 = `
+                        CREATE TABLE documents (
+                            id INT AUTO_INCREMENT PRIMARY KEY,
+                            service_id INT,
+                            user_id INT,
+                            name VARCHAR(255) NOT NULL,
+                            url VARCHAR(255) NOT NULL,
+                            date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                            FOREIGN KEY (service_id) REFERENCES services(id),
+                            FOREIGN KEY (user_id) REFERENCES users(id)
+                        );
+                    `;
+                    pool.query(sql5, (err, result) => {
+                        if (err) {
+                            return res.status(500).json({ message: 'Internal Server Error', err });
+                        }
+
+                        return res.status(200).json({ message: 'Success' });
+                    });
                 });
             });
         });
@@ -75,13 +93,13 @@ const createTables = (req, res) => {
 }
 
 
-
 const dropAll = (req, res) => {
     const dropTables = [
-        'DROP TABLE IF EXISTS services;',
+        'DROP TABLE IF EXISTS transactions;',
+        'DROP TABLE IF EXISTS documents;',
         'DROP TABLE IF EXISTS users;',
-        'DROP TABLE IF EXISTS countries;',
-        'DROP TABLE IF EXISTS transactions;'
+        'DROP TABLE IF EXISTS services;',
+        'DROP TABLE IF EXISTS countries;'
     ];
   
     let errorOccurred = false;
@@ -104,8 +122,8 @@ const dropAll = (req, res) => {
             }
         });
     });
-  };
-  
+};
+
   
 
 

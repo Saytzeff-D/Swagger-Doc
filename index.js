@@ -7,6 +7,7 @@ const pool = require('./connections/pool');
 const AuthRouter = require('./routes/auth.route');
 const SeedRouter = require('./routes/seedRoute');
 const CountryRouter = require('./routes/countryRoute');
+const DocumentRouter = require('./routes/documentsRoute');
 
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
@@ -14,6 +15,7 @@ app.use(cors({origin: '*'}))
 app.use('/auth', AuthRouter)
 app.use('/country', CountryRouter)
 app.use('/seed', SeedRouter)
+app.use('/documents', DocumentRouter)
 
 pool.getConnection((err, conn)=>{
     if(!err){

@@ -88,4 +88,42 @@ const createService = (req, res) => {
   
 
 
-module.exports = { allCountryServices, getService, createService }
+const editService = (req, res) => {
+    const serviceId = req.params.serviceId;
+    const { name, description, image, price, country_id, category } = req.body;
+
+    const updateServiceSql = `
+        UPDATE services
+        SET name = ?, description = ?, image = ?, price = ?, country_id = ?, category = ?
+        WHERE id = ?
+    `;
+    const updateServiceValues = [name, description, image, price, country_id, category, serviceId];
+
+    pool.query(updateServiceSql, updateServiceValues, (err, result) => {
+        if (err) {
+            console.error('Error updating service:', err);
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
+
+        return res.status(200).json({ message: 'Service updated successfully' });
+    });
+};
+
+
+
+const deleteService = (req, res) => {
+    const serviceId = req.params.serviceId;
+
+    const deleteServiceSql = 'DELETE FROM services WHERE id = ?';
+
+    pool.query(deleteServiceSql, [serviceId], (err, result) => {
+        if (err) {
+            console.error('Error deleting service:', err);
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
+
+        return res.status(200).json({ message: 'Service deleted successfully' });
+    });
+};
+
+module.exports = { allCountryServices, getService, createService, editService, deleteService };

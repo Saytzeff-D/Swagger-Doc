@@ -16,14 +16,15 @@ app.use('/auth', AuthRouter)
 app.use('/country', CountryRouter)
 app.use('/seed', SeedRouter)
 app.use('/documents', DocumentRouter)
+app.set('view engine', 'ejs')
 
 pool.getConnection((err, conn)=>{
     if(!err){
         console.log('FWR-Server is now connected to MySQL Database')
     }else{
-        console.log('Connection Error', err)
+        console.log('Connection Error')
     }
 })
-app.get('/', (req, res) => res.send('Server is now live'))
+app.get('/', (req, res) => res.render('index'))
 
 app.listen(process.env.PORT, () => console.log(`FWR-Server is now listening on port ${process.env.PORT}`))

@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const pool = require('./connections/pool');
 const AuthRouter = require('./routes/auth.route');
 const SeedRouter = require('./routes/seed.route');
-const CountryRouter = require('./routes/country.route');
+const ChapterRouter = require('./routes/chapter.route');
 const DocumentRouter = require('./routes/documents.route');
 
 app.use(bodyParser.urlencoded({extended: true}))

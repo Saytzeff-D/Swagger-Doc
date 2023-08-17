@@ -1,5 +1,5 @@
 const ServiceRouter = require('express').Router()
-const { isAdmin, isAuth } = require('../middlewares/authMiddleware')
+const { isAdmin, isAuth } = require('../middlewares/auth.middleware')
 const { getService, allChapterServices, createService, editService, deleteService } = require('../controllers/service.controller')
 
 ServiceRouter.post('/', isAuth, isAdmin, createService)

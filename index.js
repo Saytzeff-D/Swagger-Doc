@@ -5,6 +5,7 @@ const cors = require('cors');
 const bodyParser = require("body-parser");
 const pool = require('./connections/pool');
 const AuthRouter = require('./routes/auth.route');
+const AdminRouter = require('./routes/admin.route');
 const SeedRouter = require('./routes/seed.route');
 const ChapterRouter = require('./routes/chapter.route');
 const DocumentRouter = require('./routes/documents.route');
@@ -13,6 +14,7 @@ app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 app.use(cors({origin: '*'}))
 app.use('/auth', AuthRouter)
+app.use('/admin', AdminRouter)
 app.use('/chapter', ChapterRouter)
 app.use('/seed', SeedRouter)
 app.use('/documents', DocumentRouter)

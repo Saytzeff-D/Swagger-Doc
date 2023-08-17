@@ -2,7 +2,7 @@ const pool = require("../connections/pool")
 
 const createTables = (req, res) => {
     const sql = `
-        CREATE TABLE countries (
+        CREATE TABLE chapters (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
             image VARCHAR(255),
@@ -21,9 +21,9 @@ const createTables = (req, res) => {
                 description TEXT,
                 image VARCHAR(255),
                 price DECIMAL(10, 2),
-                country_id INT,
+                chapter_id INT,
                 category VARCHAR(50),
-                FOREIGN KEY (country_id) REFERENCES countries(id)
+                FOREIGN KEY (chapter_id) REFERENCES chapters(id)
             );
         `;
         pool.query(sql2, (err, result) => {
@@ -38,12 +38,13 @@ const createTables = (req, res) => {
                     password VARCHAR(255) NOT NULL,
                     firstname VARCHAR(255),
                     lastname VARCHAR(255),
+                    username VARCHAR(255),
                     image VARCHAR(255),
                     documents TEXT,
                     isAdmin BOOLEAN DEFAULT false,
-                    country_id INT,
+                    chapter_id INT,
                     category VARCHAR(50),
-                    FOREIGN KEY (country_id) REFERENCES countries(id)
+                    FOREIGN KEY (chapter_id) REFERENCES chapters(id)
                 );
             `;
             pool.query(sql3, (err, result) => {
@@ -84,7 +85,27 @@ const createTables = (req, res) => {
                             return res.status(500).json({ message: 'Internal Server Error', err });
                         }
 
-                        return res.status(200).json({ message: 'Success' });
+                        const sql6 = `
+                            CREATE TABLE notifications (
+                                id INT AUTO_INCREMENT PRIMARY KEY,
+                                transaction_id INT,
+                                document_id INT,
+                                user_id INT,
+                                type VARCHAR(255) NOT NULL,
+                                read BOOLEAN DEFAULT false,
+                                date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                FOREIGN KEY (document_id) REFERENCES documents(id),
+                                FOREIGN KEY (transaction_id) REFERENCES transactions(id),
+                                FOREIGN KEY (user_id) REFERENCES users(id)
+                            );
+                        `;
+                        pool.query(sql6, (err, result) => {
+                            if (err) {
+                                return res.status(500).json({ message: 'Internal Server Error', err });
+                            }
+
+                            return res.status(200).json({ message: 'Success' });
+                        });
                     });
                 });
             });
@@ -95,11 +116,12 @@ const createTables = (req, res) => {
 
 const dropAll = (req, res) => {
     const dropTables = [
+        'DROP TABLE IF EXISTS notifications;',
         'DROP TABLE IF EXISTS transactions;',
         'DROP TABLE IF EXISTS documents;',
         'DROP TABLE IF EXISTS users;',
         'DROP TABLE IF EXISTS services;',
-        'DROP TABLE IF EXISTS countries;'
+        'DROP TABLE IF EXISTS chapters;'
     ];
   
     let errorOccurred = false;

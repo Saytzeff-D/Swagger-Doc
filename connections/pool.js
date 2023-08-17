@@ -1,3 +1,19 @@
+const Sequelize = require('sequelize');
+
+const sequelize = new Sequelize(
+    process.env.DB_NAME,
+    process.env.USER,
+    process.env.DB_PASSWORD,
+    {
+        host: process.env.HOST,
+        dialect: 'mysql',
+    }
+);
+
+module.exports = sequelize;
+
+/*
+
 const mysql = require('mysql')
 
 const pool = mysql.createPool({
@@ -8,3 +24,4 @@ const pool = mysql.createPool({
 })
 
 module.exports = pool
+*/

@@ -1,5 +1,6 @@
 const twilio = require('twilio');
 const { transporter, mailOption } = require('../mailer');
+const pool = require('../connections/pool');
 
 const sendSMS = (req, res)=>{
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -16,14 +17,25 @@ const sendSMS = (req, res)=>{
 const verifyEmail = (req, res)=>{
     const email = req.body.email 
     let verificationCode = Math.floor(Math.random()*1000000)
-    transporter.sendMail(mailOption(verificationCode, email), (err, info)=>{
-        if(err){
-            console.log(err)
-            res.status(500).json({status: false, message: 'Fail to send code', email})
-        }else{
-            res.status(200).json({status: true, message: 'Success', email, info})
+    const checkEmail = `SELECT * FROM users WHERE email = ?`
+    pool.query(checkEmail, [email], (err, result)=>{
+        if (err) {
+            res.status(500).json({message: 'Internal Server Error'})
+        } else {
+            if (result.length !== 0) {
+                transporter.sendMail(mailOption(verificationCode, email), (err, info)=>{
+                    if(err){
+                        console.log(err)
+                        res.status(500).json({status: false, message: 'Fail to send code', email})
+                    }else{
+                        res.status(200).json({status: true, message: 'Success', email, info})
+                    }
+                })
+            } else {
+                res.status(200).json({status: false, message: 'User not found'})
+            }
         }
-    })
+    })    
 }
 
 module.exports = { sendSMS, verifyEmail }

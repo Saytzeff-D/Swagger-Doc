@@ -36,13 +36,13 @@ const login = (req, res) => {
             return res.status(500).json({message: 'Internal Server Error'})
         }
         if (user.length == 0) {
-            return res.status(200).json({message: 'User not found'})
+            return res.status(200).json({status: false, message: 'User not found'})
         }
         if (await bcrypt.compare(payload.password, user[0].password)) {
             const token = accessToken(user)
-            res.status(200).json({token})
+            res.status(200).json({status: true, token})
         } else {
-            return res.status(200).json({message: 'Incorrect Password'})
+            return res.status(200).json({status: false, message: 'Incorrect Password'})
         }
     })
 }

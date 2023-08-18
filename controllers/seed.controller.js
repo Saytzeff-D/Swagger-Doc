@@ -31,6 +31,7 @@ const createTables = (req, res) => {
                 return res.status(500).json({ message: 'Internal Server Error', err });
             }
 
+            
             const sql3 = `
                 CREATE TABLE users (
                     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -93,7 +94,7 @@ const createTables = (req, res) => {
                                 document_id INT,
                                 user_id INT,
                                 type VARCHAR(255) NOT NULL,
-                                read BOOLEAN DEFAULT false,
+                                read TINYINT(1) DEFAULT 0,
                                 date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                 FOREIGN KEY (document_id) REFERENCES documents(id),
                                 FOREIGN KEY (transaction_id) REFERENCES transactions(id),

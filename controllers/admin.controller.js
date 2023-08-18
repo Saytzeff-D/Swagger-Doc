@@ -37,10 +37,10 @@ const getAllUsers = (req, res) => {
     
     pool.query(sql, (err, result) => {
         if (err) {
-            return res.status(500).json({ message: 'Internal Server Error', err });
+            return res.status(500).send({ message: 'Internal Server Error', err });
         }
 
-        return res.status(200).json({ users: result });
+        return res.status(200).send({ users: result });
     });
 };
 
@@ -56,10 +56,10 @@ const deleteUser = (req, res) => {
 
     pool.query(sql, [userId], (err, result) => {
         if (err) {
-            return res.status(500).json({ message: 'Internal Server Error', err });
+            return res.status(500).send({ message: 'Internal Server Error', err });
         }
 
-        return res.status(200).json({ message: 'User deleted successfully' });
+        return res.status(200).send({ message: 'User deleted successfully' });
     });
 };
 
@@ -75,10 +75,10 @@ const getTransactionNotifications = (req, res) => {
     
     pool.query(sql, (err, result) => {
         if (err) {
-            return res.status(500).json({ message: 'Internal Server Error', err });
+            return res.status(500).send({ message: 'Internal Server Error', err });
         }
 
-        return res.status(200).json({ notifications: result });
+        return res.status(200).send({ notifications: result });
     });
 };
 
@@ -93,10 +93,10 @@ const getDocumentNotifications = (req, res) => {
     
     pool.query(sql, (err, result) => {
         if (err) {
-            return res.status(500).json({ message: 'Internal Server Error', err });
+            return res.status(500).send({ message: 'Internal Server Error', err });
         }
 
-        return res.status(200).json({ notifications: result });
+        return res.status(200).send({ notifications: result });
     });
 };
 
@@ -111,10 +111,28 @@ const getNewUserNotifications = (req, res) => {
     
     pool.query(sql, (err, result) => {
         if (err) {
-            return res.status(500).json({ message: 'Internal Server Error', err });
+            return res.status(500).send({ message: 'Internal Server Error', err });
         }
 
-        return res.status(200).json({ notifications: result });
+        return res.status(200).send({ notifications: result });
+    });
+};
+
+const addAdmin = (req, res) => {
+    const userId = req.params.userId;
+
+    const sql = `
+        UPDATE users
+        SET isAdmin = 1
+        WHERE id = ?
+    `;
+
+    pool.query(sql, [userId], (err, result) => {
+        if (err) {
+            return res.status(500).send({ message: 'Internal Server Error', err });
+        }
+
+        return res.status(200).send({ message: 'User has been added as an admin' });
     });
 };
 
@@ -124,5 +142,4 @@ const getNewUserNotifications = (req, res) => {
 
 
 
-
-module.exports = { getAllUsers, deleteUser, allNotifications, getTransactionNotifications, getDocumentNotifications, getNewUserNotifications };
+module.exports = { getAllUsers, deleteUser, allNotifications, getTransactionNotifications, getDocumentNotifications, getNewUserNotifications, addAdmin };

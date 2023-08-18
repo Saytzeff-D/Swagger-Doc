@@ -9,6 +9,7 @@ const AdminRouter = require('./routes/admin.route');
 const SeedRouter = require('./routes/seed.route');
 const ChapterRouter = require('./routes/chapter.route');
 const DocumentRouter = require('./routes/documents.route');
+const VerifyRouter = require('./routes/verify.route');
 
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
@@ -18,6 +19,7 @@ app.use('/admin', AdminRouter)
 app.use('/chapter', ChapterRouter)
 app.use('/seed', SeedRouter)
 app.use('/documents', DocumentRouter)
+app.use('/verify', VerifyRouter)
 app.set('view engine', 'ejs')
 
 pool.getConnection((err, conn)=>{

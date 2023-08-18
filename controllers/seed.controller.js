@@ -39,6 +39,7 @@ const createTables = (req, res) => {
                     firstname VARCHAR(255),
                     lastname VARCHAR(255),
                     username VARCHAR(255),
+                    phonenum VARCHAR(255),
                     image VARCHAR(255),
                     documents TEXT,
                     isAdmin BOOLEAN DEFAULT false,

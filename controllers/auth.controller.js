@@ -14,7 +14,7 @@ const register = async (req, res) => {
         }
     })
     const values = [payload.email, hashedPassword]
-    const sql = `INSERT INTO users (email, password) VALUES(?, ?)`
+    const sql = `INSERT INTO users (email, password, phonenum) VALUES(?, ?, ?)`
     pool.query(sql, values, (err, result) => {
         if (!err) {
             res.status(200).json({message: 'Success'})

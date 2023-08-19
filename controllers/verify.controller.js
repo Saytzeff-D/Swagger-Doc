@@ -1,4 +1,5 @@
 const pool = require('../connections/pool');
+const { transporter, mailOption } = require('../mailer');
 
 const verifySmsCode = (req, res) => {
     const userId = req.params.userId;
@@ -28,12 +29,49 @@ const verifySmsCode = (req, res) => {
 
 
 
-const verifyEmailCode = (req, res) => {
-    const userId = req.params.userId;
+
+const sendPasswordResetCode = (req, res) => {
+    const email = req.body.email
+    const emailCode = Math.floor(Math.random() * 1000000);
+
+    const sql = `SELECT * FROM users WHERE email = ?`;
+    pool.query(sql, [email], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
+
+        if (result.length !== 0) {
+            const updateUserCodes = `UPDATE users SET email_verification_code = ? WHERE email = ?`;
+            pool.query(updateUserCodes, [emailCode, email], (err, updateResult) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json({ message: 'Internal Server Error' });
+                }
+                transporter.sendMail(mailOption(emailCode, email), (err, info) => {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).json({ status: false, message: 'Fail to send email verification code' });
+                    }
+                    return res.status(200).json({ status: true, message: 'Verification codes sent successfully' });
+                });
+            });
+        } else {
+            return res.status(200).json({ status: false, message: 'User not found' });
+        }
+    });
+}
+
+
+
+
+
+const verifyEmailCodeForReset = (req, res) => {
+    const email = req.body.email;
     const emailCode = req.body.emailCode;
 
-    const getUserEmailCodeQuery = 'SELECT email_verification_code FROM users WHERE id = ?';
-    pool.query(getUserEmailCodeQuery, [userId], (err, result) => {
+    const sql = 'SELECT email_verification_code FROM users WHERE email = ?';
+    pool.query(sql, [email], (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Internal Server Error' });
         }
@@ -41,17 +79,11 @@ const verifyEmailCode = (req, res) => {
         const userEmailCode = result[0].email_verification_code;
 
         if (userEmailCode === emailCode) {
-            const updateUserVerifiedQuery = 'UPDATE users SET is_email_verified = true WHERE id = ?';
-            pool.query(updateUserVerifiedQuery, [userId], (err) => {
-                if (err) {
-                    return res.status(500).json({ message: 'Internal Server Error' });
-                }
-                return res.status(200).json({ message: 'Email code verified successfully' });
-            });
+            return res.status(200).json({ status: true, message: 'Email code verified successfully' });
         } else {
-            return res.status(400).json({ message: 'Invalid email code' });
+            return res.status(400).json({ status: false, message: 'Invalid email code' });
         }
     });
 };
 
-module.exports = { verifySmsCode, verifyEmailCode };
+module.exports = { verifySmsCode, sendPasswordResetCode, verifyEmailCodeForReset };

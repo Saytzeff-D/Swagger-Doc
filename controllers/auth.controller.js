@@ -1,7 +1,7 @@
 const pool = require("../connections/pool")
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const { sendVerificationCodes } = require('../verify')
+const { sendVerificationCode } = require('../verify')
 
 const register = async (req, res) => {
     let payload = req.body;
@@ -40,11 +40,11 @@ const login = (req, res) => {
             return res.status(200).json({status: false, message: 'User not found'})
         }
         if (await bcrypt.compare(payload.password, user[0].password)) {
-            if (user.is_email_verified && user.is_phone_verified) {
+            if (user.is_phone_verified) {
                 const token = accessToken(user)
                 res.status(200).json({status: true, token})
             } else {
-                sendVerificationCodes(res, user.email, user.phonenum);
+                sendVerificationCode(res, user);
             }
         } else {
             return res.status(200).json({status: false, message: 'Incorrect Password'})

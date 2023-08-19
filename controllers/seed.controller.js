@@ -45,7 +45,6 @@ const createTables = (req, res) => {
                     documents TEXT,
                     email_verification_code INT,
                     phone_verification_code INT,
-                    is_email_verified BOOLEAN DEFAULT false,
                     is_phone_verified BOOLEAN DEFAULT false
                     isAdmin BOOLEAN DEFAULT false,
                     chapter_id INT,

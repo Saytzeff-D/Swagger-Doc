@@ -1,6 +1,7 @@
 const pool = require("../connections/pool")
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
+const { sendVerificationCodes } = require('../verify')
 
 const register = async (req, res) => {
     let payload = req.body;
@@ -13,7 +14,7 @@ const register = async (req, res) => {
             return res.status(409).json({ message: 'This mail has previously been registered' });
         }
     })
-    const values = [payload.email, hashedPassword]
+    const values = [payload.email, hashedPassword, payload.phonenum]
     const sql = `INSERT INTO users (email, password, phonenum) VALUES(?, ?, ?)`
     pool.query(sql, values, (err, result) => {
         if (!err) {
@@ -39,8 +40,12 @@ const login = (req, res) => {
             return res.status(200).json({status: false, message: 'User not found'})
         }
         if (await bcrypt.compare(payload.password, user[0].password)) {
-            const token = accessToken(user)
-            res.status(200).json({status: true, token})
+            if (user.is_email_verified && user.is_phone_verified) {
+                const token = accessToken(user)
+                res.status(200).json({status: true, token})
+            } else {
+                sendVerificationCodes(res, user.email, user.phonenum);
+            }
         } else {
             return res.status(200).json({status: false, message: 'Incorrect Password'})
         }
@@ -54,6 +59,7 @@ const accessToken = (user)=>{
 const currentUser = (req, res)=>{
     res.status(200).json({loggedInUser: req.user[0]})
 }
+
 
 
 module.exports = { register, login, currentUser }

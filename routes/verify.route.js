@@ -1,8 +1,8 @@
 const express = require('express')
-const { sendSMS, verifyEmail } = require('../controllers/verify.controller')
+const { verifyEmailCode, verifySmsCode } = require('../controllers/verify.controller')
 const VerifyRouter = express.Router()
 
-VerifyRouter.get('/sms', sendSMS)
-VerifyRouter.post('/email', verifyEmail)
+VerifyRouter.post('/sms/:userId', verifySmsCode)
+VerifyRouter.post('/email/:userId', verifyEmailCode)
 
 module.exports =  VerifyRouter

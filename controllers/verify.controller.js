@@ -1,41 +1,57 @@
-const twilio = require('twilio');
-const { transporter, mailOption } = require('../mailer');
 const pool = require('../connections/pool');
 
-const sendSMS = (req, res)=>{
-    const accountSid = process.env.TWILIO_ACCOUNT_SID;
-    const authToken = process.env.TWILIO_AUTH_TOKEN;
-    const client = twilio(accountSid, authToken);
+const verifySmsCode = (req, res) => {
+    const userId = req.params.userId;
+    const smsCode = req.body.smsCode;
 
-    client.verify.v2.services('VAe23bef213ac150cd108e53c4b24efc38')
-        .verifications
-        .create({to: '+2347060546163', channel: 'sms'})
-        .then(verification =>{
-            res.json({message: 'Sent', verify: verification.sid})
-        });
-}
-const verifyEmail = (req, res)=>{
-    const email = req.body.email 
-    let verificationCode = Math.floor(Math.random()*1000000)
-    const checkEmail = `SELECT * FROM users WHERE email = ?`
-    pool.query(checkEmail, [email], (err, result)=>{
+    const getUserSmsCodeQuery = 'SELECT phone_verification_code FROM users WHERE id = ?';
+    pool.query(getUserSmsCodeQuery, [userId], (err, result) => {
         if (err) {
-            res.status(500).json({message: 'Internal Server Error'})
-        } else {
-            if (result.length !== 0) {
-                transporter.sendMail(mailOption(verificationCode, email), (err, info)=>{
-                    if(err){
-                        console.log(err)
-                        res.status(500).json({status: false, message: 'Fail to send code', email})
-                    }else{
-                        res.status(200).json({status: true, message: 'Success', email, info})
-                    }
-                })
-            } else {
-                res.status(200).json({status: false, message: 'User not found'})
-            }
+            return res.status(500).json({ message: 'Internal Server Error' });
         }
-    })    
-}
 
-module.exports = { sendSMS, verifyEmail }
+        const userSmsCode = result[0].phone_verification_code;
+
+        if (userSmsCode === smsCode) {
+            const updateUserVerifiedQuery = 'UPDATE users SET is_phone_verified = true WHERE id = ?';
+            pool.query(updateUserVerifiedQuery, [userId], (err) => {
+                if (err) {
+                    return res.status(500).json({ message: 'Internal Server Error' });
+                }
+                return res.status(200).json({ message: 'SMS code verified successfully' });
+            });
+        } else {
+            return res.status(400).json({ message: 'Invalid SMS code' });
+        }
+    });
+};
+
+
+
+const verifyEmailCode = (req, res) => {
+    const userId = req.params.userId;
+    const emailCode = req.body.emailCode;
+
+    const getUserEmailCodeQuery = 'SELECT email_verification_code FROM users WHERE id = ?';
+    pool.query(getUserEmailCodeQuery, [userId], (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
+
+        const userEmailCode = result[0].email_verification_code;
+
+        if (userEmailCode === emailCode) {
+            const updateUserVerifiedQuery = 'UPDATE users SET is_email_verified = true WHERE id = ?';
+            pool.query(updateUserVerifiedQuery, [userId], (err) => {
+                if (err) {
+                    return res.status(500).json({ message: 'Internal Server Error' });
+                }
+                return res.status(200).json({ message: 'Email code verified successfully' });
+            });
+        } else {
+            return res.status(400).json({ message: 'Invalid email code' });
+        }
+    });
+};
+
+module.exports = { verifySmsCode, verifyEmailCode };

@@ -14,6 +14,13 @@ const isAdmin = (req, res, next) => {
     next()
 }
 
+const isVerified = (req, res, next) => {
+    if(!req.user || !req.user.isVerified) {
+        return res.status(403).json({message: 'You need to log in again and verify your account'})
+    }
+    next()
+}
+
 const authJWT = (req, res, next)=>{
     const splitJWT = req.headers.authorization
     if (splitJWT) {
@@ -33,4 +40,4 @@ const authJWT = (req, res, next)=>{
 }
 
 
-module.exports = { isAdmin, isAuth, authJWT }
+module.exports = { isAdmin, isAuth, isVerified, authJWT }

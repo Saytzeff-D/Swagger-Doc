@@ -31,27 +31,28 @@ const createTables = (req, res) => {
                 return res.status(500).json({ message: 'Internal Server Error', err });
             }
 
-            
             const sql3 = `
-                CREATE TABLE users (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    email VARCHAR(255) NOT NULL,
-                    password VARCHAR(255) NOT NULL,
-                    firstname VARCHAR(255),
-                    lastname VARCHAR(255),
-                    username VARCHAR(255),
-                    phonenum VARCHAR(255),
-                    image VARCHAR(255),
-                    documents TEXT,
-                    email_verification_code INT,
-                    phone_verification_code INT,
-                    is_phone_verified BOOLEAN DEFAULT false
-                    isAdmin BOOLEAN DEFAULT false,
-                    chapter_id INT,
-                    category VARCHAR(50),
-                    FOREIGN KEY (chapter_id) REFERENCES chapters(id)
-                );
-            `;
+            CREATE TABLE foreignwr.users (id INT NOT NULL AUTO_INCREMENT , email VARCHAR(255) NOT NULL , password VARCHAR(255) NOT NULL , firstname VARCHAR(255) NULL , lastname VARCHAR(255) NULL , username VARCHAR(255) NULL , phonenum VARCHAR(255) NOT NULL , image VARCHAR(255) NULL , documents TEXT NULL , email_verification_code INT NULL , phone_verification_code INT NULL , is_phone_verified BOOLEAN DEFAULT false , is_Admin BOOLEAN DEFAULT false , chapter_id INT NULL , category VARCHAR(255) NULL , PRIMARY KEY (id), UNIQUE (email))`
+            // const sql3 = `
+            //     CREATE TABLE users (
+            //         id INT AUTO_INCREMENT PRIMARY KEY,
+            //         email VARCHAR(255) UNIQUE NOT NULL,
+            //         password VARCHAR(255) NOT NULL,
+            //         firstname VARCHAR(255),
+            //         lastname VARCHAR(255),
+            //         username VARCHAR(255),
+            //         phonenum VARCHAR(255),
+            //         image VARCHAR(255),
+            //         documents TEXT,
+            //         email_verification_code INT,
+            //         phone_verification_code INT,
+            //         is_phone_verified BOOLEAN DEFAULT false
+            //         isAdmin BOOLEAN DEFAULT false,
+            //         chapter_id INT,
+            //         category VARCHAR(50),
+            //         FOREIGN KEY (chapter_id) REFERENCES chapters(id)
+            //     );
+            // `;
             pool.query(sql3, (err, result) => {
                 if (err) {
                     return res.status(500).json({ message: 'Internal Server Error', err });
@@ -155,3 +156,5 @@ const dropAll = (req, res) => {
 
 
 module.exports = { createTables, dropAll }
+
+// CREATE TABLE `foreignwr`.`users` (`id` INT NOT NULL AUTO_INCREMENT , `email` VARCHAR(255) NOT NULL , `password` VARCHAR(255) NOT NULL , `firstname` VARCHAR(255) NOT NULL , `lastname` VARCHAR(255) NOT NULL , `username` VARCHAR(255) NOT NULL , `phonenum` VARCHAR(255) NOT NULL , `image` VARCHAR(255) NOT NULL , `documents` TEXT NOT NULL , `email_verification_code` INT NOT NULL , `phone_verification_code` INT NOT NULL , `is_phone_verified` BOOLEAN NOT NULL , `is_Admin` BOOLEAN NOT NULL , `chapter_id` INT NOT NULL , `category` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`), UNIQUE (`email`))

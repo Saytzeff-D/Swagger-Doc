@@ -43,7 +43,7 @@ const login = (req, res) => {
             }else {
                 if (await bcrypt.compare(payload.password, user[0].password)) {
                     // if (user.is_phone_verified == 1) {
-                        const token = accessToken(user)
+                        const token = accessToken(user[0])
                         res.status(200).json({status: true, token, verify: true})
                     // } else {                        
                     //     sendVerificationCode(res, user[0]);

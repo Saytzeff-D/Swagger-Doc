@@ -154,10 +154,14 @@ const adminLogin = (req, res) => {
                 return res.status(200).json({status: false, message: 'User not found'})
             }else {
                 if (await bcrypt.compare(payload.password, user[0].password)) {
-                    const token = accessToken(user[0])
-                    res.status(200).json({status: true, token, verify: true})
+                    if (user[0].is_Admin == 1) {
+                        const token = accessToken(user[0])
+                        res.status(200).json({status: true, token, verify: true})
+                    } else {
+                        return res.status(403).json({status: false, message: 'You cannot proceed because you are not an admin'})
+                    }
                 } else {
-                    return res.status(200).json({status: false, message: 'Incorrect Password'})
+                    return res.status(401).json({status: false, message: 'Incorrect Password'})
                 }
             }
         }        

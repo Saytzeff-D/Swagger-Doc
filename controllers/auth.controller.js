@@ -17,6 +17,11 @@ const register = async (req, res) => {
             const sql = `INSERT INTO users (email, password, phonenum) VALUES(?, ?, ?)`
             pool.query(sql, values, (err, result) => {
                 if (!err) {
+                    const notifSql = `INSERT INTO notifications (user_id, type) VALUES(?, ?)`
+                    pool.query(notifSql, [result[0].id, "signup"], (notifErr, notifResult) => {
+                        if (!notifErr) console.log("Admin notification created")
+                        else console.log("Could not create admin notification")
+                    })
                     sendVerificationCode(res, payload)
                     // res.status(200).json({message: 'Success'})
                 } else {

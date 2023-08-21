@@ -7,7 +7,7 @@ const allNotifications = (req, res) => {
     
     const sql = `
         SELECT n.id, n.transaction_id, n.document_id, n.user_id,
-            n.type, n.read, n.date,
+            n.type, n.unread, n.date,
             t.service_id AS transaction_service_id, t.user_id AS transaction_user_id,
             d.service_id AS document_service_id, d.user_id AS document_user_id,
             u.email AS user_email
@@ -19,7 +19,7 @@ const allNotifications = (req, res) => {
     
     pool.query(sql, (err, result) => {
         if (err) {
-            console.error('Error fetching services:', err);
+            console.error('Error fetching notifications:', err);
             return res.status(500).send({ message: 'Internal Server Error' });
         }
     
@@ -68,7 +68,7 @@ const deleteUser = (req, res) => {
 
 const getTransactionNotifications = (req, res) => {
     const sql = `
-        SELECT n.id, n.type, n.read, n.date, t.service_id, t.user_id
+        SELECT n.id, n.type, n.unread, n.date, t.service_id, t.user_id
         FROM notifications n
         JOIN transactions t ON n.transaction_id = t.id
         WHERE n.transaction_id IS NOT NULL AND n.document_id IS NULL AND n.user_id IS NULL
@@ -86,7 +86,7 @@ const getTransactionNotifications = (req, res) => {
 
 const getDocumentNotifications = (req, res) => {
     const sql = `
-        SELECT n.id, n.type, n.read, n.date, d.service_id, d.user_id
+        SELECT n.id, n.type, n.unread, n.date, d.service_id, d.user_id
         FROM notifications n
         JOIN documents d ON n.document_id = d.id
         WHERE n.document_id IS NOT NULL AND n.transaction_id IS NULL AND n.user_id IS NULL
@@ -104,7 +104,7 @@ const getDocumentNotifications = (req, res) => {
 
 const getNewUserNotifications = (req, res) => {
     const sql = `
-        SELECT n.id, n.type, n.read, n.date, u.id AS user_id
+        SELECT n.id, n.type, n.unread, n.date, u.id AS user_id
         FROM notifications n
         JOIN users u ON n.user_id = u.id
         WHERE n.user_id IS NOT NULL AND n.transaction_id IS NULL AND n.document_id IS NULL

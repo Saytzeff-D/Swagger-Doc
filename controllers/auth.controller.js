@@ -57,7 +57,7 @@ const login = (req, res) => {
 }
 
 
-export const accessToken = (user)=>{
+const accessToken = (user)=>{
     return jwt.sign({ result: user }, process.env.JWT_SECRET, { expiresIn: '60m' })    
 }
 const currentUser = (req, res)=>{

@@ -23,7 +23,7 @@ const createTables = (req, res) => {
                 price DECIMAL(10, 2),
                 chapter_id INT,
                 category VARCHAR(50),
-                FOREIGN KEY (chapter_id) REFERENCES chapters(id)
+                INDEX(chapter_id)
             );
         `;
         pool.query(sql2, (err, result) => {
@@ -32,27 +32,27 @@ const createTables = (req, res) => {
             }
 
             const sql3 = `
-            CREATE TABLE foreignwr.users (id INT NOT NULL AUTO_INCREMENT , email VARCHAR(255) NOT NULL , password VARCHAR(255) NOT NULL , firstname VARCHAR(255) NULL , lastname VARCHAR(255) NULL , username VARCHAR(255) NULL , phonenum VARCHAR(255) NOT NULL , image VARCHAR(255) NULL , documents TEXT NULL , email_verification_code INT NULL , phone_verification_code INT NULL , is_phone_verified BOOLEAN DEFAULT false , is_Admin BOOLEAN DEFAULT false , chapter_id INT NULL , category VARCHAR(255) NULL , PRIMARY KEY (id), UNIQUE (email))`
-            // const sql3 = `
-            //     CREATE TABLE users (
-            //         id INT AUTO_INCREMENT PRIMARY KEY,
-            //         email VARCHAR(255) UNIQUE NOT NULL,
-            //         password VARCHAR(255) NOT NULL,
-            //         firstname VARCHAR(255),
-            //         lastname VARCHAR(255),
-            //         username VARCHAR(255),
-            //         phonenum VARCHAR(255),
-            //         image VARCHAR(255),
-            //         documents TEXT,
-            //         email_verification_code INT,
-            //         phone_verification_code INT,
-            //         is_phone_verified BOOLEAN DEFAULT false
-            //         isAdmin BOOLEAN DEFAULT false,
-            //         chapter_id INT,
-            //         category VARCHAR(50),
-            //         FOREIGN KEY (chapter_id) REFERENCES chapters(id)
-            //     );
-            // `;
+                CREATE TABLE users (
+                    id INT NOT NULL AUTO_INCREMENT , 
+                    email VARCHAR(255) NOT NULL , 
+                    password VARCHAR(255) NOT NULL , 
+                    firstname VARCHAR(255) NULL , 
+                    lastname VARCHAR(255) NULL , 
+                    username VARCHAR(255) NULL , 
+                    phonenum VARCHAR(255) NOT NULL , 
+                    image VARCHAR(255) NULL , 
+                    documents TEXT NULL , 
+                    email_verification_code INT NULL , 
+                    phone_verification_code INT NULL , 
+                    is_phone_verified BOOLEAN DEFAULT false , 
+                    is_Admin BOOLEAN DEFAULT false , 
+                    chapter_id INT NULL , 
+                    category VARCHAR(255) NULL , 
+                    PRIMARY KEY (id), 
+                    UNIQUE (email),
+                    INDEX(chapter_id)
+                    );
+                `
             pool.query(sql3, (err, result) => {
                 if (err) {
                     return res.status(500).json({ message: 'Internal Server Error', err });
@@ -65,8 +65,8 @@ const createTables = (req, res) => {
                         user_id INT,
                         price DECIMAL(10, 2),
                         paid BOOLEAN,
-                        FOREIGN KEY (service_id) REFERENCES services(id),
-                        FOREIGN KEY (user_id) REFERENCES users(id)
+                        INDEX(service_id),
+                        INDEX(user_id)                        
                     );
                 `;
                 pool.query(sql4, (err, result) => {
@@ -82,8 +82,8 @@ const createTables = (req, res) => {
                             name VARCHAR(255) NOT NULL,
                             url VARCHAR(255) NOT NULL,
                             date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                            FOREIGN KEY (service_id) REFERENCES services(id),
-                            FOREIGN KEY (user_id) REFERENCES users(id)
+                            INDEX(service_id),
+                            INDEX(user_id)                         
                         );
                     `;
                     pool.query(sql5, (err, result) => {
@@ -100,9 +100,9 @@ const createTables = (req, res) => {
                                 type VARCHAR(255) NOT NULL,
                                 unread BOOLEAN DEFAULT false,
                                 date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                FOREIGN KEY (document_id) REFERENCES documents(id),
-                                FOREIGN KEY (transaction_id) REFERENCES transactions(id),
-                                FOREIGN KEY (user_id) REFERENCES users(id)
+                                INDEX(transaction_id),
+                                INDEX(document_id),
+                                INDEX(user_id)
                             );
                         `;
                         pool.query(sql6, (err, result) => {

@@ -1,4 +1,5 @@
 const pool = require("../connections/pool")
+const { accessToken } = require("./auth.controller")
 
 
 
@@ -140,6 +141,30 @@ const addAdmin = (req, res) => {
 
 
 
+const adminLogin = (req, res) => {
+    let payload = req.body
+    const values = [payload.email]
+    const checkEmail = `SELECT * FROM users WHERE email = ?`
+    pool.query(checkEmail, values, async (err, result)=>{
+        const user = result
+        if (err) {
+            return res.status(500).json({message: 'Internal Server Error'})
+        }else {
+            if (user.length == 0) {
+                return res.status(200).json({status: false, message: 'User not found'})
+            }else {
+                if (await bcrypt.compare(payload.password, user[0].password)) {
+                    const token = accessToken(user[0])
+                    res.status(200).json({status: true, token, verify: true})
+                } else {
+                    return res.status(200).json({status: false, message: 'Incorrect Password'})
+                }
+            }
+        }        
+    })
+}
 
 
-module.exports = { getAllUsers, deleteUser, allNotifications, getTransactionNotifications, getDocumentNotifications, getNewUserNotifications, addAdmin };
+
+
+module.exports = { getAllUsers, deleteUser, allNotifications, getTransactionNotifications, getDocumentNotifications, getNewUserNotifications, addAdmin, adminLogin };

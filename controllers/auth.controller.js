@@ -43,7 +43,7 @@ const login = (req, res) => {
             }else {
                 if (await bcrypt.compare(payload.password, user[0].password)) {
                     if (user.is_phone_verified == 1) {
-                        const token = accessToken(user)
+                        const token = accessToken(user[0])
                         res.status(200).json({status: true, token, verify: true})
                     } else {                        
                         sendVerificationCode(res, user[0]);
@@ -57,7 +57,7 @@ const login = (req, res) => {
 }
 
 
-const accessToken = (user)=>{
+export const accessToken = (user)=>{
     return jwt.sign({ result: user }, process.env.JWT_SECRET, { expiresIn: '60m' })    
 }
 const currentUser = (req, res)=>{
@@ -66,4 +66,4 @@ const currentUser = (req, res)=>{
 
 
 
-module.exports = { register, login, currentUser }
+module.exports = { register, login, currentUser, accessToken }

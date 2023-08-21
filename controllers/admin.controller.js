@@ -23,8 +23,7 @@ const allNotifications = (req, res) => {
             return res.status(500).send({ message: 'Internal Server Error' });
         }
     
-    
-        return res.status(200).send({ notifications: result });
+        return res.status(200).send({ notifications: result, notificationCount: result.length });
     });
 };
 
@@ -41,7 +40,7 @@ const getAllUsers = (req, res) => {
             return res.status(500).send({ message: 'Internal Server Error', err });
         }
 
-        return res.status(200).send({ users: result });
+        return res.status(200).send({ users: result, usersCount: result.length });
     });
 };
 
@@ -79,7 +78,7 @@ const getTransactionNotifications = (req, res) => {
             return res.status(500).send({ message: 'Internal Server Error', err });
         }
 
-        return res.status(200).send({ notifications: result });
+        return res.status(200).send({ notifications: result, notificationCount: result.length });
     });
 };
 
@@ -97,7 +96,7 @@ const getDocumentNotifications = (req, res) => {
             return res.status(500).send({ message: 'Internal Server Error', err });
         }
 
-        return res.status(200).send({ notifications: result });
+        return res.status(200).send({ notifications: result, notificationCount: result.length });
     });
 };
 
@@ -115,7 +114,7 @@ const getNewUserNotifications = (req, res) => {
             return res.status(500).send({ message: 'Internal Server Error', err });
         }
 
-        return res.status(200).send({ notifications: result });
+        return res.status(200).send({ notifications: result, notificationCount: result.length });
     });
 };
 

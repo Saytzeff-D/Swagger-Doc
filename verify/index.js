@@ -11,7 +11,7 @@ const sendVerificationCode = (res, user) => {
     const updateUserCodes = `UPDATE users SET phone_verification_code = ? WHERE email = ?`;
         pool.query(updateUserCodes, [smsCode, user.email], (err, updateResult) => {
             if (err) {
-                console.error(err);
+                console.log(err);
                 return res.status(500).json({ message: 'Internal Server Error' });
             }
             client.messages

@@ -42,12 +42,12 @@ const login = (req, res) => {
                 return res.status(200).json({status: false, message: 'User not found'})
             }else {
                 if (await bcrypt.compare(payload.password, user[0].password)) {
-                    if (user.is_phone_verified == 1) {
-                        const token = accessToken(user[0])
+                    // if (user.is_phone_verified == 1) {
+                        const token = accessToken(user)
                         res.status(200).json({status: true, token, verify: true})
-                    } else {                        
-                        sendVerificationCode(res, user[0]);
-                    }
+                    // } else {                        
+                    //     sendVerificationCode(res, user[0]);
+                    // }
                 } else {
                     return res.status(200).json({status: false, message: 'Incorrect Password'})
                 }

@@ -3,7 +3,7 @@ const { verifySmsCode, sendPasswordResetCode, verifyEmailCodeForReset } = requir
 const VerifyRouter = express.Router()
 
 VerifyRouter.post('/sms/:userId', verifySmsCode)
-VerifyRouter.post('/reset-email', sendPasswordResetCode)
+VerifyRouter.post('/forgot-password', sendPasswordResetCode)
 VerifyRouter.post('/verify-reset-code', verifyEmailCodeForReset)
 
 module.exports =  VerifyRouter

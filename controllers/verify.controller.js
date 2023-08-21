@@ -53,7 +53,7 @@ const sendPasswordResetCode = (req, res) => {
                         console.error(err);
                         return res.status(500).json({ status: false, message: 'Fail to send email verification code' });
                     }
-                    return res.status(200).json({ status: true, message: 'Verification codes sent successfully' });
+                    return res.status(200).json({ status: true, message: 'Verification codes sent successfully', email });
                 });
             });
         } else {
@@ -77,11 +77,12 @@ const verifyEmailCodeForReset = (req, res) => {
         }
 
         const userEmailCode = result[0].email_verification_code;
+        console.log(userEmailCode, emailCode)
 
         if (userEmailCode === emailCode) {
             return res.status(200).json({ status: true, message: 'Email code verified successfully' });
         } else {
-            return res.status(400).json({ status: false, message: 'Invalid email code' });
+            return res.status(200).json({ status: false, message: 'Invalid OTP code' });
         }
     });
 };

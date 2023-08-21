@@ -17,7 +17,7 @@ const register = async (req, res) => {
             const sql = `INSERT INTO users (email, password, phonenum) VALUES(?, ?, ?)`
             pool.query(sql, values, (err, result) => {
                 if (!err) {
-                    sendVerificationCode(res, payload.email)
+                    sendVerificationCode(res, payload)
                     // res.status(200).json({message: 'Success'})
                 } else {
                     console.log(err)
@@ -40,16 +40,17 @@ const login = (req, res) => {
         }else {
             if (user.length == 0) {
                 return res.status(200).json({status: false, message: 'User not found'})
-            }
-            else if (await bcrypt.compare(payload.password, user[0].password)) {
-                if (user.is_phone_verified) {
-                    const token = accessToken(user)
-                    res.status(200).json({status: true, token, verify: true})
+            }else {
+                if (await bcrypt.compare(payload.password, user[0].password)) {
+                    if (user.is_phone_verified == 1) {
+                        const token = accessToken(user)
+                        res.status(200).json({status: true, token, verify: true})
+                    } else {                        
+                        sendVerificationCode(res, user[0]);
+                    }
                 } else {
-                    sendVerificationCode(res, payload.email);
+                    return res.status(200).json({status: false, message: 'Incorrect Password'})
                 }
-            } else {
-                return res.status(200).json({status: false, message: 'Incorrect Password'})
             }
         }        
     })

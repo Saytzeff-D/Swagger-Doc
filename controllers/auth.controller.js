@@ -11,19 +11,19 @@ const register = async (req, res) => {
     pool.query(checkEmailQuery, [payload.email], async (err, result) => {
         const emailExists = result[0].count > 0;
         if (emailExists) {            
-            return res.status(200).json({ message: 'This mail has previously been registered' });
+            return res.status(200).json({ status: false, message: 'This mail has previously been registered' });
         }else {
             const values = [payload.email, hashedPassword, payload.phonenum]
             const sql = `INSERT INTO users (email, password, phonenum) VALUES(?, ?, ?)`
             pool.query(sql, values, (err, result) => {
                 if (!err) {
                     const notifSql = `INSERT INTO notifications (user_id, type) VALUES(?, ?)`
-                    pool.query(notifSql, [result[0].id, "signup"], (notifErr, notifResult) => {
+                    pool.query(notifSql, [result.insertId, "signup"], (notifErr, notifResult) => {
                         if (!notifErr) console.log("Admin notification created")
                         else console.log("Could not create admin notification")
                     })
-                    sendVerificationCode(res, payload)
-                    // res.status(200).json({message: 'Success'})
+                    // sendVerificationCode(res, payload)
+                    res.status(200).json({status: true, message: 'Success', token: accessToken({id:result.insertId})})
                 } else {
                     console.log(err)
                     res.status(500).json({message: 'Internal Server Error'})
@@ -60,15 +60,11 @@ const login = (req, res) => {
         }        
     })
 }
-
-
 const accessToken = (user)=>{
     return jwt.sign({ result: user }, process.env.JWT_SECRET, { expiresIn: '60m' })    
 }
 const currentUser = (req, res)=>{
     res.status(200).json({loggedInUser: req.user[0]})
 }
-
-
 
 module.exports = { register, login, currentUser, accessToken }

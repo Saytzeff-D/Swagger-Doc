@@ -1,4 +1,5 @@
 const pool = require("../connections/pool")
+const bcrypt = require('bcrypt')
 const { accessToken } = require("./auth.controller")
 
 
@@ -31,16 +32,16 @@ const allNotifications = (req, res) => {
 
 const getAllUsers = (req, res) => {
     const sql = `
-        SELECT id, email, firstname, lastname, username, isAdmin
+        SELECT id, email, firstname, lastname, username, is_Admin
         FROM users
     `;
     
     pool.query(sql, (err, result) => {
         if (err) {
+            console.log(err)
             return res.status(500).send({ message: 'Internal Server Error', err });
         }
-
-        return res.status(200).send({ users: result, usersCount: result.length });
+        return res.status(200).send({ users: result, usersCount: result.length, adminCount: result.filter(each=>each.is_Admin == 1) });
     });
 };
 
@@ -56,10 +57,14 @@ const deleteUser = (req, res) => {
 
     pool.query(sql, [userId], (err, result) => {
         if (err) {
-            return res.status(500).send({ message: 'Internal Server Error', err });
+            return res.status(500).send({ 
+                message: 'Internal Server Error', 
+                err 
+            });
         }
-
-        return res.status(200).send({ message: 'User deleted successfully' });
+        return res.status(200).send({ 
+            message: 'User deleted successfully' 
+        });
     });
 };
 
@@ -157,10 +162,10 @@ const adminLogin = (req, res) => {
                         const token = accessToken(user[0])
                         res.status(200).json({status: true, token, verify: true})
                     } else {
-                        return res.status(403).json({status: false, message: 'You cannot proceed because you are not an admin'})
+                        return res.status(200).json({status: false, message: 'You cannot proceed because you are not an admin'})
                     }
                 } else {
-                    return res.status(401).json({status: false, message: 'Incorrect Password'})
+                    return res.status(200).json({status: false, message: 'Incorrect Password'})
                 }
             }
         }        

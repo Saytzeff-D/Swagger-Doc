@@ -1,7 +1,11 @@
 const AdminRouter = require("express").Router()
 const { isAuth, isAdmin } = require("../middlewares/auth.middleware")
-const { allNotifications, getAllUsers, deleteUser, getTransactionNotifications, getNewUserNotifications, getDocumentNotifications, addAdmin, adminLogin } = require("../controllers/admin.controller")
+const { allNotifications, getAllUsers, deleteUser, getTransactionNotifications, getNewUserNotifications, getDocumentNotifications, addAdmin, adminLogin, dashboardCount } = require("../controllers/admin.controller")
 
+AdminRouter.get(
+    '/count',
+    dashboardCount
+)
 AdminRouter.get(
     '/users',
     //isAuth, isAdmin,
@@ -33,7 +37,7 @@ AdminRouter.get(
     getDocumentNotifications
     );
 AdminRouter.post(
-    '/add-admin/:userId',
+    '/add-admin',
     //isAuth, isAdmin,
     addAdmin
     );

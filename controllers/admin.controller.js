@@ -2,10 +2,52 @@ const pool = require("../connections/pool")
 const bcrypt = require('bcrypt')
 const { accessToken } = require("./auth.controller")
 
-
-
-const allNotifications = (req, res) => {
-    
+const dashboardCount = (req, res)=>{    
+    let count = { }
+    const adminSql = `SELECT COUNT(*) AS count FROM users WHERE is_Admin = 1`
+    const userSql = `SELECT COUNT(*) AS count FROM users WHERE is_Admin = 0`
+    const notifSql = `SELECT COUNT(*) AS count FROM notifications`
+    const chaptSql = `SELECT COUNT(*) AS count FROM chapters`
+    const docSql = `SELECT COUNT(*) AS count FROM documents`
+    pool.query(adminSql, (err, result)=>{
+        if (!err) {
+            count = {...count, admin: result[0].count}
+            pool.query(userSql, (err, result)=>{
+                if (!err) {
+                    count = {...count, users: result[0].count}
+                    pool.query(notifSql, (err, result)=>{
+                        if (!err) {
+                            count = {...count, notifications: result[0].count}
+                            pool.query(chaptSql, (err, result)=>{
+                                if (!err) {
+                                    count = {...count, chapters: result[0].count}
+                                    pool.query(docSql, (err, result)=>{
+                                        if (!err) {
+                                            count = {...count, docs: result[0].count}
+                                            res.status(200).json({count})
+                                            // Now sending the response to the frontend                                                                                        // 
+                                        } else {
+                                            res.status(500).json('Internal Server Error')
+                                        }
+                                    })
+                                } else {
+                                    res.status(500).json('Internal Server Error')
+                                }
+                            })
+                        } else {
+                            res.status(500).json('Internal Server Error')
+                        }
+                    })
+                } else {
+                    res.status(500).json('Internal Server Error')
+                }
+            })
+        } else {
+            res.status(500).json('Internal Server Error')
+        }
+    })
+}
+const allNotifications = (req, res) => {    
     const sql = `
         SELECT n.id, n.transaction_id, n.document_id, n.user_id,
             n.type, n.unread, n.date,
@@ -24,12 +66,9 @@ const allNotifications = (req, res) => {
             return res.status(500).send({ message: 'Internal Server Error' });
         }
     
-        return res.status(200).send({ notifications: result, notificationCount: result.length });
+        return res.status(200).send({ notifications: result });
     });
 };
-
-
-
 const getAllUsers = (req, res) => {
     const sql = `
         SELECT id, email, firstname, lastname, username, is_Admin
@@ -41,12 +80,9 @@ const getAllUsers = (req, res) => {
             console.log(err)
             return res.status(500).send({ message: 'Internal Server Error', err });
         }
-        return res.status(200).send({ users: result, usersCount: result.length, adminCount: result.filter(each=>each.is_Admin == 1) });
+        return res.status(200).send({ users: result });
     });
 };
-
-
-
 const deleteUser = (req, res) => {
     const userId = req.params.userId;
 
@@ -67,9 +103,6 @@ const deleteUser = (req, res) => {
         });
     });
 };
-
-
-
 const getTransactionNotifications = (req, res) => {
     const sql = `
         SELECT n.id, n.type, n.unread, n.date, t.service_id, t.user_id
@@ -83,11 +116,9 @@ const getTransactionNotifications = (req, res) => {
             return res.status(500).send({ message: 'Internal Server Error', err });
         }
 
-        return res.status(200).send({ notifications: result, notificationCount: result.length });
+        return res.status(200).send({ notifications: result });
     });
 };
-
-
 const getDocumentNotifications = (req, res) => {
     const sql = `
         SELECT n.id, n.type, n.unread, n.date, d.service_id, d.user_id
@@ -101,11 +132,9 @@ const getDocumentNotifications = (req, res) => {
             return res.status(500).send({ message: 'Internal Server Error', err });
         }
 
-        return res.status(200).send({ notifications: result, notificationCount: result.length });
+        return res.status(200).send({ notifications: result });
     });
 };
-
-
 const getNewUserNotifications = (req, res) => {
     const sql = `
         SELECT n.id, n.type, n.unread, n.date, u.id AS user_id
@@ -119,32 +148,28 @@ const getNewUserNotifications = (req, res) => {
             return res.status(500).send({ message: 'Internal Server Error', err });
         }
 
-        return res.status(200).send({ notifications: result, notificationCount: result.length });
+        return res.status(200).send({ notifications: result });
     });
 };
-
 const addAdmin = (req, res) => {
-    const userId = req.params.userId;
-
+    const email = req.body.email;
     const sql = `
         UPDATE users
-        SET isAdmin = 1
-        WHERE id = ?
+        SET is_Admin = 1
+        WHERE email = ?
     `;
-
-    pool.query(sql, [userId], (err, result) => {
+    pool.query(sql, [email], (err, result) => {
         if (err) {
-            return res.status(500).send({ message: 'Internal Server Error', err });
-        }
-
-        return res.status(200).send({ message: 'User has been added as an admin' });
+            return res.status(500).json({ message: 'Internal Server Error', err });
+        }else {
+            if (result.affectedRows == 1) {
+                return res.status(200).json({ status: true, message: 'User has been added as an admin' });
+            } else {
+                res.status(200).json({status: false, message: 'Such Email does not exist'})
+            }
+        }        
     });
 };
-
-
-
-
-
 const adminLogin = (req, res) => {
     let payload = req.body
     const values = [payload.email]
@@ -171,8 +196,16 @@ const adminLogin = (req, res) => {
         }        
     })
 }
+const adminFunc = { 
+    getAllUsers, 
+    deleteUser, 
+    allNotifications, 
+    getTransactionNotifications, 
+    getDocumentNotifications, 
+    getNewUserNotifications, 
+    addAdmin, 
+    adminLogin, 
+    dashboardCount 
+};
 
-
-
-
-module.exports = { getAllUsers, deleteUser, allNotifications, getTransactionNotifications, getDocumentNotifications, getNewUserNotifications, addAdmin, adminLogin };
+module.exports = adminFunc

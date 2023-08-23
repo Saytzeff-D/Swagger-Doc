@@ -40,6 +40,7 @@ const createTables = (req, res) => {
                     lastname VARCHAR(255) NULL , 
                     username VARCHAR(255) NULL , 
                     phonenum VARCHAR(255) NOT NULL , 
+                    about VARCHAR(255) NULL,
                     image VARCHAR(255) NULL , 
                     documents TEXT NULL , 
                     email_verification_code INT NULL , 

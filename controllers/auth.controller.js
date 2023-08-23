@@ -2,6 +2,7 @@ const pool = require("../connections/pool")
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const { sendVerificationCode } = require('../verify')
+const { createNotification } = require('../utils')
 
 const register = async (req, res) => {
     let payload = req.body;
@@ -9,26 +10,27 @@ const register = async (req, res) => {
     //Check if mail has previously been registered
     const checkEmailQuery = `SELECT COUNT(*) AS count FROM users WHERE email = ?`
     pool.query(checkEmailQuery, [payload.email], async (err, result) => {
-        const emailExists = result[0].count > 0;
-        if (emailExists) {            
-            return res.status(200).json({ status: false, message: 'This mail has previously been registered' });
-        }else {
-            const values = [payload.email, hashedPassword, payload.phonenum]
-            const sql = `INSERT INTO users (email, password, phonenum) VALUES(?, ?, ?)`
-            pool.query(sql, values, (err, result) => {
-                if (!err) {
-                    const notifSql = `INSERT INTO notifications (user_id, type) VALUES(?, ?)`
-                    pool.query(notifSql, [result.insertId, "signup"], (notifErr, notifResult) => {
-                        if (!notifErr) console.log("Admin notification created")
-                        else console.log("Could not create admin notification")
-                    })
-                    // sendVerificationCode(res, payload)
-                    res.status(200).json({status: true, message: 'Success', token: accessToken({id:result.insertId})})
-                } else {
-                    console.log(err)
-                    res.status(500).json({message: 'Internal Server Error'})
-                }
-            })
+        if (result && result.length > 0) {
+            const emailExists = result[0].count > 0;
+            if (emailExists) {            
+                return res.status(200).json({ status: false, message: 'This mail has previously been registered' });
+            }else {
+                const values = [payload.email, hashedPassword, payload.phonenum]
+                const sql = `INSERT INTO users (email, password, phonenum) VALUES(?, ?, ?)`
+                pool.query(sql, values, (err, result) => {
+                    if (!err) {
+                        const getUserSql = `SELECT * FROM users WHERE email = ?`;
+                        pool.query(getUserSql, [payload.email], async (err, result) => {
+                            if (!err) createNotification("signup", result[0].id, result[0]);
+                        });
+                        // sendVerificationCode(res, payload)
+                        res.status(200).json({status: true, message: 'Success', token: accessToken({id:result.insertId})})
+                    } else {
+                        console.log(err)
+                        res.status(500).json({message: 'Internal Server Error'})
+                    }
+                })
+            }
         }
     })    
 }

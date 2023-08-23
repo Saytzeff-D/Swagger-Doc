@@ -25,7 +25,6 @@ const dashboardCount = (req, res)=>{
                                         if (!err) {
                                             count = {...count, docs: result[0].count}
                                             res.status(200).json({count})
-                                            // Now sending the response to the frontend                                                                                        // 
                                         } else {
                                             res.status(500).json('Internal Server Error')
                                         }
@@ -47,6 +46,9 @@ const dashboardCount = (req, res)=>{
         }
     })
 }
+
+
+
 const allNotifications = (req, res) => {    
     const sql = `
         SELECT n.id, n.transaction_id, n.document_id, n.user_id,

@@ -47,7 +47,8 @@ const createTables = (req, res) => {
                     is_phone_verified BOOLEAN DEFAULT false , 
                     is_Admin BOOLEAN DEFAULT false , 
                     chapter_id INT NULL , 
-                    category VARCHAR(255) NULL , 
+                    category VARCHAR(255) NULL,
+                    joined_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     PRIMARY KEY (id), 
                     UNIQUE (email),
                     INDEX(chapter_id)
@@ -98,8 +99,9 @@ const createTables = (req, res) => {
                                 document_id INT,
                                 user_id INT,
                                 type VARCHAR(255) NOT NULL,
-                                unread BOOLEAN DEFAULT false,
+                                unread BOOLEAN DEFAULT true,
                                 date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                description VARCHAR(255) NOT NULL,
                                 INDEX(transaction_id),
                                 INDEX(document_id),
                                 INDEX(user_id)

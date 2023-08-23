@@ -12,6 +12,8 @@ const getChapters = (req, res) => {
       return res.status(200).send({chapters: result, chapterCount: result.length});      
     });
 };
+
+
 const getChapter = (req, res) => {
     const values = [req.params.id]
     const sql = `SELECT * FROM chapters WHERE id = ?`
@@ -25,6 +27,8 @@ const getChapter = (req, res) => {
       
     });
 };
+
+
 const chooseChapter = (req, res)=>{
     const payload = req.body
     console.log(payload, req.user)
@@ -37,6 +41,8 @@ const chooseChapter = (req, res)=>{
         }
     })
 }
+
+
 const createChapter = (req, res) => {
     const { name, image, description } = req.body;
     const values = [ name, image, description ];
@@ -60,6 +66,8 @@ const createChapter = (req, res) => {
         });
     });
 };
+
+
 const updateChapter = (req, res) => {
     const { name, image, description } = req.body;
     const values = [ name, image, description, req.params.id ];
@@ -77,6 +85,8 @@ const updateChapter = (req, res) => {
         return res.status(200).json({ message: 'Chapter updated successfully' });
     });
 };
+
+
 const deleteChapter = (req, res) => {
     const sql = `DELETE FROM chapters WHERE id = ?`;
     pool.query(sql, [ req.params.id ], (err, result) => {

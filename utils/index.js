@@ -1,4 +1,4 @@
-const pool = require("./connections/pool")
+const pool = require("../connections/pool")
 
 const createNotification = (type, id, user) => {
     let sql, description, arrayVar;

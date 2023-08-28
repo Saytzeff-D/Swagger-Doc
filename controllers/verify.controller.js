@@ -79,7 +79,7 @@ const verifyEmailCodeForReset = (req, res) => {
         const userEmailCode = result[0].email_verification_code;        
 
         if (userEmailCode === parseInt(otp)) {
-            return res.status(200).json({ status: true, message: 'Email code verified successfully' });
+            return res.status(200).json({ status: true, message: 'OTP verified successfully' });
         } else {
             return res.status(200).json({ status: false, message: 'Invalid OTP code' });
         }

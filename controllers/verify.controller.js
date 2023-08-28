@@ -1,4 +1,6 @@
 const pool = require('../connections/pool');
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 const { transporter, mailOption } = require('../mailer');
 
 const verifySmsCode = (req, res) => {
@@ -25,11 +27,7 @@ const verifySmsCode = (req, res) => {
             return res.status(400).json({ message: 'Invalid SMS code' });
         }
     });
-};
-
-
-
-
+}
 const sendPasswordResetCode = (req, res) => {
     const email = req.body.email
     const otp = Math.floor(Math.random() * 1000000);
@@ -61,11 +59,6 @@ const sendPasswordResetCode = (req, res) => {
         }
     });
 }
-
-
-
-
-
 const verifyEmailCodeForReset = (req, res) => {
     const email = req.body.email;
     const otp = req.body.otp;
@@ -79,11 +72,28 @@ const verifyEmailCodeForReset = (req, res) => {
         const userEmailCode = result[0].email_verification_code;        
 
         if (userEmailCode === parseInt(otp)) {
-            return res.status(200).json({ status: true, message: 'OTP verified successfully' });
+            const token = jwt.sign({ result: email }, process.env.JWT_SECRET, { expiresIn: '5m' })
+            return res.status(200).json({ status: true, message: 'OTP verified successfully', token });
         } else {
             return res.status(200).json({ status: false, message: 'Invalid OTP code' });
         }
     });
-};
+}
+const resetPassword = (req, res)=>{
+    const email = req.email
+    const payload = req.body
+    console.log(email, payload)
+    const password = bcrypt.hash(payload.password, 10)    
+    console.log(password)
+    // const sql = `UPDATE users SET password = ? WHERE email = ?`
+    // pool.query(sql, [password, email], (err, result)=>{
+    //     if (!err) {
+    //         res.status(200).json({status: true, message: 'Password reset successfully'})
+    //     } else {
+    //         console.log(err)
+    //         res.status(200).json({status: false, message: 'Internal Server Error'})
+    //     }
+    // })
+}
 
-module.exports = { verifySmsCode, sendPasswordResetCode, verifyEmailCodeForReset };
+module.exports = { verifySmsCode, sendPasswordResetCode, verifyEmailCodeForReset, resetPassword };

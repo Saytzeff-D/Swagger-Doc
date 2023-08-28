@@ -1,8 +1,8 @@
 const pool = require("../connections/pool")
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const { sendVerificationCode } = require('../verify')
 const { createNotification } = require('../utils')
+const { sendVerificationCode } = require("./sms.controller")
 
 const register = async (req, res) => {
     let payload = req.body;

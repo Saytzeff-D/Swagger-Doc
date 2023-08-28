@@ -32,7 +32,7 @@ const verifySmsCode = (req, res) => {
 
 const sendPasswordResetCode = (req, res) => {
     const email = req.body.email
-    const emailCode = Math.floor(Math.random() * 1000000);
+    const otp = Math.floor(Math.random() * 1000000);
 
     const sql = `SELECT * FROM users WHERE email = ?`;
     pool.query(sql, [email], (err, result) => {
@@ -43,12 +43,12 @@ const sendPasswordResetCode = (req, res) => {
 
         if (result.length !== 0) {
             const updateUserCodes = `UPDATE users SET email_verification_code = ? WHERE email = ?`;
-            pool.query(updateUserCodes, [emailCode, email], (err, updateResult) => {
+            pool.query(updateUserCodes, [otp, email], (err, updateResult) => {
                 if (err) {
                     console.error(err);
                     return res.status(500).json({ message: 'Internal Server Error' });
                 }
-                transporter.sendMail(mailOption(emailCode, email), (err, info) => {
+                transporter.sendMail(mailOption(otp, email), (err, info) => {
                     if (err) {
                         console.error(err);
                         return res.status(500).json({ status: false, message: 'Fail to send email verification code' });
@@ -68,7 +68,7 @@ const sendPasswordResetCode = (req, res) => {
 
 const verifyEmailCodeForReset = (req, res) => {
     const email = req.body.email;
-    const emailCode = req.body.emailCode;
+    const otp = req.body.otp;
 
     const sql = 'SELECT email_verification_code FROM users WHERE email = ?';
     pool.query(sql, [email], (err, result) => {
@@ -76,10 +76,9 @@ const verifyEmailCodeForReset = (req, res) => {
             return res.status(500).json({ message: 'Internal Server Error' });
         }
 
-        const userEmailCode = result[0].email_verification_code;
-        console.log(userEmailCode, emailCode)
+        const userEmailCode = result[0].email_verification_code;        
 
-        if (userEmailCode === emailCode) {
+        if (userEmailCode === otp) {
             return res.status(200).json({ status: true, message: 'Email code verified successfully' });
         } else {
             return res.status(200).json({ status: false, message: 'Invalid OTP code' });

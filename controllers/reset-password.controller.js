@@ -3,32 +3,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const { transporter, mailOption } = require('../mailer');
 
-const verifySmsCode = (req, res) => {
-    const userId = req.params.userId;
-    const smsCode = req.body.smsCode;
-
-    const getUserSmsCodeQuery = 'SELECT phone_verification_code FROM users WHERE id = ?';
-    pool.query(getUserSmsCodeQuery, [userId], (err, result) => {
-        if (err) {
-            return res.status(500).json({ message: 'Internal Server Error' });
-        }
-
-        const userSmsCode = result[0].phone_verification_code;
-
-        if (userSmsCode === smsCode) {
-            const updateUserVerifiedQuery = 'UPDATE users SET is_phone_verified = true WHERE id = ?';
-            pool.query(updateUserVerifiedQuery, [userId], (err) => {
-                if (err) {
-                    return res.status(500).json({ message: 'Internal Server Error' });
-                }
-                return res.status(200).json({ message: 'SMS code verified successfully' });
-            });
-        } else {
-            return res.status(400).json({ message: 'Invalid SMS code' });
-        }
-    });
-}
-const sendPasswordResetCode = (req, res) => {
+const sendOtpCode = (req, res) => {
     const email = req.body.email
     const otp = Math.floor(Math.random() * 1000000);
 
@@ -59,7 +34,7 @@ const sendPasswordResetCode = (req, res) => {
         }
     });
 }
-const verifyEmailCodeForReset = (req, res) => {
+const verifyOtpCode = (req, res) => {
     const email = req.body.email;
     const otp = req.body.otp;
 
@@ -79,21 +54,19 @@ const verifyEmailCodeForReset = (req, res) => {
         }
     });
 }
-const resetPassword = (req, res)=>{
+const resetPassword = async (req, res)=>{
     const email = req.email
-    const payload = req.body
-    console.log(email, payload)
-    const password = bcrypt.hash(payload.password, 10)    
-    console.log(password)
-    // const sql = `UPDATE users SET password = ? WHERE email = ?`
-    // pool.query(sql, [password, email], (err, result)=>{
-    //     if (!err) {
-    //         res.status(200).json({status: true, message: 'Password reset successfully'})
-    //     } else {
-    //         console.log(err)
-    //         res.status(200).json({status: false, message: 'Internal Server Error'})
-    //     }
-    // })
+    const payload = req.body    
+    const password = await bcrypt.hash(payload.password, 10)        
+    const sql = `UPDATE users SET password = ? WHERE email = ?`
+    pool.query(sql, [password, email], (err, result)=>{
+        if (!err) {
+            res.status(200).json({status: true, message: 'Password reset successfully'})
+        } else {
+            console.log(err)
+            res.status(500).json({status: false, message: 'Internal Server Error'})
+        }
+    })
 }
 
-module.exports = { verifySmsCode, sendPasswordResetCode, verifyEmailCodeForReset, resetPassword };
+module.exports = { sendOtpCode, verifyOtpCode, resetPassword };

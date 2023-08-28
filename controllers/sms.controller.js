@@ -26,7 +26,32 @@ const sendVerificationCode = (res, user) => {
                     return res.status(500).json({status: true, verify: false, message: 'Error sending phone verification code'});
                 })                         
         });    
-};
+}
+const verifySmsCode = (req, res) => {
+    const userId = req.params.userId;
+    const smsCode = req.body.smsCode;
+
+    const getUserSmsCodeQuery = 'SELECT phone_verification_code FROM users WHERE id = ?';
+    pool.query(getUserSmsCodeQuery, [userId], (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: 'Internal Server Error' });
+        }
+
+        const userSmsCode = result[0].phone_verification_code;
+
+        if (userSmsCode === smsCode) {
+            const updateUserVerifiedQuery = 'UPDATE users SET is_phone_verified = true WHERE id = ?';
+            pool.query(updateUserVerifiedQuery, [userId], (err) => {
+                if (err) {
+                    return res.status(500).json({ message: 'Internal Server Error' });
+                }
+                return res.status(200).json({ message: 'SMS code verified successfully' });
+            });
+        } else {
+            return res.status(400).json({ message: 'Invalid SMS code' });
+        }
+    });
+}
 
 
-module.exports = { sendVerificationCode }
+module.exports = { sendVerificationCode, verifySmsCode }

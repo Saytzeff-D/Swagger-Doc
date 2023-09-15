@@ -4,6 +4,98 @@ const bcrypt = require('bcrypt')
 const { createNotification } = require('../utils')
 const { sendVerificationCode } = require("./sms.controller")
 
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       required:
+ *         - firstname
+ *         - lastname
+ *         - username
+ *         - phonenum
+ *         - email
+ *         - password
+ *         - image
+ *         - about
+ *         - document
+ *         - joined_date
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The auto-generated id of the user
+ *         firstname:
+ *           type: string
+ *         lastname:
+ *           type: string
+ *         username:
+ *           type: string
+ *         phonenum:
+ *           type: string
+ *         email:
+ *           type: string
+ *         password:
+ *           type: string
+ *         image:
+ *           type: string
+ *         about:
+ *           type: string         
+ *         documents:
+ *           type: text       
+ *         joined_date:
+ *           type: timestamp
+ */
+
+/**
+ * @swagger
+ * tags:
+ *  name: Users
+ *  description: The user authentication API
+*/
+
+/**
+ * @swagger
+ * /auth/register:
+ *  post:
+ *    summary: registers a new user
+ *    tags: [Users]
+ *    requestBody:
+ *      required: true
+ *      content: 
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required: 
+ *              - email
+ *              - password
+ *              - phonenum
+ *            properties:
+ *              email:
+ *                type: string
+ *              password:
+ *                type: string
+ *            example: 
+ *              email: example@gmail.com
+ *              password: "example1234!"
+ *              phonenum: "+2348164572165"
+ *    responses:
+ *      200:
+ *        description: registration successful 
+ *      500:
+ *        description: Internal Server Error 
+ *    
+ */
 const register = async (req, res) => {
     let payload = req.body;
     const hashedPassword = await bcrypt.hash(payload.password, 10);
@@ -35,7 +127,38 @@ const register = async (req, res) => {
     })    
 }
 
-
+/**
+ * @swagger
+ * /auth/login:
+ *  post:
+ *    summary: login a user
+ *    tags: [Users]
+ *    requestBody:
+ *      required: true
+ *      content: 
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required: 
+ *              - email
+ *              - password
+ *            properties:
+ *              email:
+ *                type: string
+ *              password:
+ *                type: string
+ *            example: 
+ *              email: example@gmail.com
+ *              password: "example1234!"
+ *    responses:
+ *      200:
+ *        description: The user has succesfully logged in
+ *      404:
+ *        description: User not found
+ *      500:
+ *        description: Internal Server Error 
+ *    
+ */
 const login = (req, res) => {
     let payload = req.body
     const values = [payload.email]
@@ -62,9 +185,30 @@ const login = (req, res) => {
         }        
     })
 }
+
 const accessToken = (user)=>{
     return jwt.sign({ result: user }, process.env.JWT_SECRET, { expiresIn: '60m' })    
 }
+
+/**
+ * @swagger
+ * /auth/currentUser:
+ *  get:
+ *    summary: current logged in user
+ *    tags: [Users]
+ *    parameters: 
+ *     - name: authorization
+ *       in: header
+ *       description: an authorization header
+ *       required: true
+ *       type: string 
+ *    responses:
+ *      200:
+ *        description: Return the details of the current user
+ *      500:
+ *        description: Internal Server Error 
+ *    
+ */
 const currentUser = (req, res)=>{
     res.status(200).json({loggedInUser: req.user[0]})
 }

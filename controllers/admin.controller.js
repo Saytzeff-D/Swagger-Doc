@@ -2,6 +2,32 @@ const pool = require("../connections/pool")
 const bcrypt = require('bcrypt')
 const { accessToken } = require("./auth.controller")
 
+/**
+ * @swagger
+ * tags:
+ *  name: Admin
+ *  description: The Admin authentication API
+*/
+
+/**
+ * @swagger
+ * /admin/count:
+ *  get:
+ *    summary: get the counts on the dashboard
+ *    tags: [Admin]
+ *    parameters: 
+ *     - name: authorization
+ *       in: header
+ *       description: an authorization header
+ *       required: true
+ *       type: string
+ *    responses:
+ *      200:
+ *        description: returns count as an object
+ *      500:
+ *        description: Internal Server Error 
+ *    
+ */
 const dashboardCount = (req, res)=>{    
     let count = { }
     const adminSql = `SELECT COUNT(*) AS count FROM users WHERE is_Admin = 1`

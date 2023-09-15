@@ -14,6 +14,7 @@ const DocumentRouter = require('./routes/documents.route');
 const VerifyRouter = require('./routes/verify.route');
 
 const options = {
+    explorer: true,
     definition: {
         openapi: "3.0.0",
         info: {
@@ -24,12 +25,13 @@ const options = {
     },
     servers: [
         {
-            url: 'https://foreignwr-server.onrender.com/'
+            url: 'https://foreignwr-server.onrender.com/'            
         }
     ],
     apis: [
         './controllers/*.js'        
-    ]
+    ],
+    failOnErrors: true
 }
 
 const specs = swaggerDocs(options)

@@ -7,16 +7,6 @@ const { sendVerificationCode } = require("./sms.controller")
 /**
  * @swagger
  * components:
- *   securitySchemes:
- *     bearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
- */
-
-/**
- * @swagger
- * components:
  *   schemas:
  *     User:
  *       type: object
@@ -60,7 +50,7 @@ const { sendVerificationCode } = require("./sms.controller")
 /**
  * @swagger
  * tags:
- *  name: Users
+ *  name: Auth
  *  description: The user authentication API
 */
 
@@ -69,7 +59,7 @@ const { sendVerificationCode } = require("./sms.controller")
  * /auth/register:
  *  post:
  *    summary: registers a new user
- *    tags: [Users]
+ *    tags: [Auth]
  *    requestBody:
  *      required: true
  *      content: 
@@ -132,7 +122,7 @@ const register = async (req, res) => {
  * /auth/login:
  *  post:
  *    summary: login a user
- *    tags: [Users]
+ *    tags: [Auth]
  *    requestBody:
  *      required: true
  *      content: 
@@ -195,7 +185,7 @@ const accessToken = (user)=>{
  * /auth/currentUser:
  *  get:
  *    summary: current logged in user
- *    tags: [Users]
+ *    tags: [Auth]
  *    parameters: 
  *     - name: authorization
  *       in: header

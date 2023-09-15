@@ -2,7 +2,43 @@ const pool = require("../connections/pool")
 const fs = require("fs")
 const cloudinary = require("cloudinary")
 
+/**
+ * @swagger
+ * tags:
+ *  name: Documents
+ *  description: The Document API
+*/
 
+/**
+ * @swagger
+ * /documents/upload:
+ *  post:
+ *    summary: uploads document to the server
+ *    tags: [Documents]
+ *    requestBody:
+ *      required: true
+ *      content: 
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required: 
+ *              - service
+ *              - name
+ *            properties:
+ *              service:
+ *                type: string
+ *              name:
+ *                type: string
+ *            example: 
+ *              service: visa services
+ *              name: "name"
+ *    responses:
+ *      200:
+ *        description: Document uploaded successfully
+ *      500:
+ *        description: Internal Server Error
+ *    
+ */
 const uploadDoc = async (req, res) => {
     const { service, name } = req.body;
     try {

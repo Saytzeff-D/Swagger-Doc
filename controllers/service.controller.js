@@ -1,7 +1,60 @@
 const pool = require("../connections/pool")
 
+/**
+ * @swagger
+ * tags:
+ *  name: Services
+ *  description: The ForeignWR Services API
+*/
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Services:
+ *       type: object
+ *       required:
+ *         - name
+ *         - description
+ *         - image
+ *         - price
+ *         - chapter_id
+ *         - category
+ *       properties:
+ *         name:
+ *           type: string
+ *         description:
+ *           type: string
+ *         image:
+ *             type: bytes
+ *         price:
+ *             type: string
+ *         chapter_id:
+ *             type: string
+ *         category:
+ *             type: string
+ */
 
+/**
+ * @swagger
+ * /services/chapter/{chapterId}:
+ *  get:
+ *    summary: gets the services for the specified chapter
+ *    tags: [Services]
+ *    parameters:
+ *      - name: chapterId
+ *        in: path
+ *        type: string
+ *        description: the id of the chapter 
+ *    responses:
+ *      200:
+ *        description: returns service as a key of an array
+ *      404:
+ *        description: Service not found
+ *      500:
+ *        description: Internal Server Error
+ *    
+ */
 const allChapterServices = (req, res) => {
     const chapterId = req.params.chapterId;
     
@@ -32,7 +85,26 @@ const allChapterServices = (req, res) => {
 
   
 
-
+/**
+ * @swagger
+ * /services/{serviceId}:
+ *  get:
+ *    summary: retrieves the service with the service_id
+ *    tags: [Services]
+ *    parameters:
+ *      - name: serviceId
+ *        in: path
+ *        type: string
+ *        description: the id of the service 
+ *    responses:
+ *      200:
+ *        description: returns service as a key of an array
+ *      404:
+ *        description: Service not found
+ *      500:
+ *        description: Internal Server Error
+ *    
+ */
 const getService = (req, res) => {
     const serviceId = req.params.serviceId;
 
@@ -54,7 +126,52 @@ const getService = (req, res) => {
 };
 
 
-
+/**
+ * @swagger
+ * /services/:
+ *  post:
+ *    summary: create a new service
+ *    tags: [Services]
+ *    requestBody:
+ *      required: true
+ *      content: 
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required: 
+ *              - name
+ *              - description
+ *              - image
+ *              - price
+ *              - chapter_id
+ *              - category
+ *            properties:
+ *              name:
+ *                type: string
+ *              description:
+ *                type: string
+ *              image:
+ *                  type: bytes
+ *              price:
+ *                  type: string
+ *              chapter_id:
+ *                  type: string
+ *              category:
+ *                  type: string
+ *            example: 
+ *              name: "Airport"
+ *              description: "description"
+ *              image: "data:image/jpg:base64xjkksjsiiw"
+ *              price: "5000"
+ *              chapter_id: "1"
+ *              category: "category"
+ *    responses:
+ *      200:
+ *        description: Service created successfully 
+ *      500:
+ *        description: Internal Server Error 
+ *    
+ */
 const createService = (req, res) => {
     const { name, description, image, price, chapter_id, category } = req.body;
 
@@ -87,7 +204,63 @@ const createService = (req, res) => {
 };
   
 
-
+/**
+ * @swagger
+ * /services/{serviceId}:
+ *  put:
+ *    summary: edit a service
+ *    tags: [Services]
+ *    parameters: 
+ *     - name: authorization
+ *       in: header
+ *       description: an authorization header
+ *       required: true
+ *       type: string
+ *     - name: serviceId
+ *       in: path
+ *       description: id of the service
+ *       required: true
+ *       type: string
+ *    requestBody:
+ *      required: true
+ *      content: 
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required: 
+ *              - name
+ *              - description
+ *              - image
+ *              - price
+ *              - chapter_id
+ *              - category
+ *            properties:
+ *              name:
+ *                type: string
+ *              description:
+ *                type: string
+ *              image:
+ *                  type: bytes
+ *              price:
+ *                  type: string
+ *              chapter_id:
+ *                  type: string
+ *              category:
+ *                  type: string
+ *            example: 
+ *              name: "Airport"
+ *              description: "description"
+ *              image: "data:image/jpg:base64xjkksjsiiw"
+ *              price: "5000"
+ *              chapter_id: "1"
+ *              category: "category"
+ *    responses:
+ *      200:
+ *        description: Success
+ *      500:
+ *        description: Internal Server Error
+ *    
+ */
 const editService = (req, res) => {
     const serviceId = req.params.serviceId;
     const { name, description, image, price, chapter_id, category } = req.body;
@@ -110,7 +283,29 @@ const editService = (req, res) => {
 };
 
 
-
+/**
+ * @swagger
+ * /services/{serviceId}:
+ *  delete:
+ *    summary: deletes a service
+ *    tags: [Services]
+ *    parameters: 
+ *     - name: authorization
+ *       in: header
+ *       description: an authorization header
+ *       required: true
+ *       type: string
+ *     - name: serviceId
+ *       in: path
+ *       description: id of the service
+ *       type: string
+ *    responses:
+ *      200:
+ *        description: Service deleted successfully
+ *      500:
+ *        description: Internal Server Error 
+ *    
+ */
 const deleteService = (req, res) => {
     const serviceId = req.params.serviceId;
 

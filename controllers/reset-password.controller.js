@@ -3,6 +3,39 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const { transporter, mailOption } = require('../mailer');
 
+/**
+ * @swagger
+ * tags:
+ *  name: Verify
+ *  description: The User verification API
+*/
+
+/**
+ * @swagger
+ * /verify/forgot-password:
+ *  post:
+ *    summary: sends an otp code to user's email
+ *    tags: [Verify]
+ *    requestBody:
+ *      required: true
+ *      content: 
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required: 
+ *              - email
+ *            properties:
+ *              email:
+ *                type: string
+ *            example: 
+ *              email: example@gmail.com
+ *    responses:
+ *      200:
+ *        description: Verification codes sent successfully
+ *      500:
+ *        description: Fail to send email verification code 
+ *    
+ */
 const sendOtpCode = (req, res) => {
     const email = req.body.email
     const otp = Math.floor(Math.random() * 1000000);
@@ -34,6 +67,39 @@ const sendOtpCode = (req, res) => {
         }
     });
 }
+
+/**
+ * @swagger
+ * /verify/verify-otp-code:
+ *  post:
+ *    summary: verifies the otp code sent to the user's email
+ *    tags: [Verify]
+ *    requestBody:
+ *      required: true
+ *      content: 
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required: 
+ *              - email
+ *              - otp
+ *            properties:
+ *              email:
+ *                type: string
+ *              otp:
+ *                type: string  
+ *            example: 
+ *              email: example@gmail.com
+ *              otp: "049870"
+ *    responses:
+ *      200:
+ *        description: OTP verified successfully
+ *      203:
+ *        description: Invalid OTP code
+ *      500:
+ *        description: Internal Server Error
+ *    
+ */
 const verifyOtpCode = (req, res) => {
     const email = req.body.email;
     const otp = req.body.otp;
@@ -54,6 +120,38 @@ const verifyOtpCode = (req, res) => {
         }
     });
 }
+
+/**
+ * @swagger
+ * /verify/reset-password:
+ *  put:
+ *    summary: resets the password of a user
+ *    tags: [Verify]
+ *    parameters:
+ *      - name: authorization
+ *        in: header
+ *        type: string
+ *        description: Authorization Header
+ *    requestBody:
+ *      required: true
+ *      content: 
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required: 
+ *              - password
+ *            properties:
+ *              password:
+ *                type: string
+ *            example: 
+ *              password: password 
+ *    responses:
+ *      200:
+ *        description: Password reset successfully
+ *      500:
+ *        description: Internal Server Error
+ *    
+ */
 const resetPassword = async (req, res)=>{
     const email = req.email
     const payload = req.body    

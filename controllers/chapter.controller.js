@@ -62,7 +62,7 @@ const getChapters = (req, res) => {
 
 /**
  * @swagger
- * /chapter/chapters/:id:
+ * /chapter/chapters/{id}:
  *  get:
  *    summary: retrieves a chapter
  *    tags: [Chapters]
@@ -212,7 +212,7 @@ const createChapter = (req, res) => {
 
 /**
  * @swagger
- * /chapter/chapters/:id:
+ * /chapter/chapters/{id}:
  *  put:
  *    summary: updates a chapter
  *    tags: [Chapters]
@@ -278,7 +278,7 @@ const updateChapter = (req, res) => {
 
 /**
  * @swagger
- * /chapter/chapters/:id:
+ * /chapter/chapters/{id}:
  *  delete:
  *    summary: deletes a chapter
  *    tags: [Chapters]

@@ -13,7 +13,7 @@ const { accessToken } = require("./auth.controller")
  * @swagger
  * /admin/count:
  *  get:
- *    summary: get the counts on the dashboard
+ *    summary: get the counts on the admin dashboard
  *    tags: [Admin]
  *    parameters: 
  *     - name: authorization
@@ -78,7 +78,7 @@ const dashboardCount = (req, res)=>{
  * @swagger
  * /admin/notifications:
  *  get:
- *    summary: retieves all notifications
+ *    summary: retrieves all notifications
  *    tags: [Admin]
  *    parameters: 
  *     - name: authorization
@@ -152,7 +152,7 @@ const getAllUsers = (req, res) => {
 
 /**
  * @swagger
- * /admin/user/:userId:
+ * /admin/user/{userId}:
  *  delete:
  *    summary: deletes a user
  *    tags: [Admin]

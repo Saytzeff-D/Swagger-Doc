@@ -74,7 +74,25 @@ const dashboardCount = (req, res)=>{
 }
 
 
-
+/**
+ * @swagger
+ * /admin/notifications:
+ *  get:
+ *    summary: retieves all notifications
+ *    tags: [Admin]
+ *    parameters: 
+ *     - name: authorization
+ *       in: header
+ *       description: an authorization header
+ *       required: true
+ *       type: string
+ *    responses:
+ *      200:
+ *        description: returns notifications as the key of an array
+ *      500:
+ *        description: Internal Server Error 
+ *    
+ */
 const allNotifications = (req, res) => {    
     const sql = `
         SELECT n.id, n.transaction_id, n.document_id, n.user_id,
@@ -97,6 +115,26 @@ const allNotifications = (req, res) => {
         return res.status(200).send({ notifications: result });
     });
 };
+
+/**
+ * @swagger
+ * /admin/users:
+ *  get:
+ *    summary: get all FWR users
+ *    tags: [Admin]
+ *    parameters: 
+ *     - name: authorization
+ *       in: header
+ *       description: an authorization header
+ *       required: true
+ *       type: string
+ *    responses:
+ *      200:
+ *        description: returns users as an array
+ *      500:
+ *        description: Internal Server Error 
+ *    
+ */
 const getAllUsers = (req, res) => {
     const sql = `
         SELECT id, email, firstname, lastname, username, is_Admin
@@ -111,6 +149,30 @@ const getAllUsers = (req, res) => {
         return res.status(200).send({ users: result });
     });
 };
+
+/**
+ * @swagger
+ * /admin/user/:userId:
+ *  delete:
+ *    summary: deletes a user
+ *    tags: [Admin]
+ *    parameters: 
+ *     - name: authorization
+ *       in: header
+ *       description: an authorization header
+ *       required: true
+ *       type: string
+ *     - name: userId
+ *       in: path
+ *       description: id of the user
+ *       type: string
+ *    responses:
+ *      200:
+ *        description: User deleted successfully
+ *      500:
+ *        description: Internal Server Error 
+ *    
+ */
 const deleteUser = (req, res) => {
     const userId = req.params.userId;
 
@@ -179,6 +241,39 @@ const getNewUserNotifications = (req, res) => {
         return res.status(200).send({ notifications: result });
     });
 };
+
+/**
+ * @swagger
+ * /admin/add-admin:
+ *  post:
+ *    summary: adds an admin
+ *    tags: [Admin]
+ *    parameters: 
+ *     - name: authorization
+ *       in: header
+ *       description: an authorization header
+ *       required: true
+ *       type: string
+ *    requestBody:
+ *      required: true
+ *      content: 
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required: 
+ *              - email
+ *            properties:
+ *              email:
+ *                type: string
+ *            example: 
+ *              email: example@gmail.com
+ *    responses:
+ *      200:
+ *        description: user has been added as an admin
+ *      500:
+ *        description: Internal Server Error 
+ *    
+ */
 const addAdmin = (req, res) => {
     const email = req.body.email;
     const sql = `
@@ -198,6 +293,37 @@ const addAdmin = (req, res) => {
         }        
     });
 };
+
+/**
+ * @swagger
+ * /admin/login:
+ *  post:
+ *    summary: login an admin
+ *    tags: [Admin]
+ *    requestBody:
+ *      required: true
+ *      content: 
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            required: 
+ *              - email
+ *              - password
+ *            properties:
+ *              email:
+ *                type: string
+ *              password:
+ *                type: string
+ *            example: 
+ *              email: example@gmail.com
+ *              password: "example1234!"
+ *    responses:
+ *      200:
+ *        description: success
+ *      500:
+ *        description: Internal Server Error 
+ *    
+ */
 const adminLogin = (req, res) => {
     let payload = req.body
     const values = [payload.email]

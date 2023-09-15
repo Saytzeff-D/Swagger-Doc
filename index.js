@@ -19,16 +19,16 @@ const options = {
         info: {
             title: 'ForeignWR API DOCS',
             version: '0.0.1',
-            description: 'Rest API for Foreign Wives Reign'
+            description: 'Rest API Swagger Documentation for Foreign Wives Reign'
         }
     },
     servers: [
         {
-            url: 'http://localhost:5050/'
+            url: 'https://foreignwr-server.onrender.com/'
         }
     ],
     apis: [
-        './controllers/*.js'
+        './controllers/*.js'        
     ]
 }
 
